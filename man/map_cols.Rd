@@ -16,7 +16,7 @@ map_cols(
   city = NULL,
   collection_start_date,
   collection_end_date,
-  test_id = NULL,
+  test_id,
   result,
   result_cat,
   include_others = FALSE
@@ -79,6 +79,7 @@ map_cols(df_orig,
          country = "Earth!",
          collection_start_date = collection_start_date,
          collection_end_date = collection_end_date,
+         test_id = assays$`SARS-CoV-2`$`EUROIMMUN - IgG - Anti-SARS-CoV-2 ELISA IgG`,
          result = result,
          result_cat = result_cat,
          include_others = FALSE)

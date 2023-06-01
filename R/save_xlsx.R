@@ -21,24 +21,28 @@
 #'                       result = c("'2.4'", "3.5", "9"),
 #'                       result_cat = rep("negative", times = 3))
 #'
-#' df_out <- map_cols(df_orig,
-#'                    dataset_id = dataset_id,
-#'                    id = id,
-#'                    age_group = age,
-#'                    sex = sex,
-#'                    country = "Earth!",
-#'                    collection_start_date = collection_start_date,
-#'                    collection_end_date = collection_end_date,
-#'                    result = result,
-#'                    result_cat = result_cat,
-#'                    include_others = FALSE)
+#' df_out <- map_cols(
+#'   df_orig,
+#'   dataset_id = dataset_id,
+#'   id = id,
+#'   age_group = age,
+#'   sex = sex,
+#'   country = "Earth!",
+#'   collection_start_date = collection_start_date,
+#'   collection_end_date = collection_end_date,
+#'   test_id = assays$`SARS-CoV-2`$`EUROIMMUN - IgG - Anti-SARS-CoV-2 ELISA IgG`,
+#'   result = result,
+#'   result_cat = result_cat,
+#'   include_others = FALSE
+#' ) %>% clean()
 #'
-#'save_xlsx(df_out, path = "foo.xlsx")
+#' save_xlsx(df_out, path = tempdir())
 #'
 #' @import openxlsx
 
 save_xlsx <- function(data, path) {
-  path_template <- system.file("extdata", "Blank Template-Scrubbed v2.0.xlsx",
+  data <- data[, names(data) != "country"]
+  path_template <- system.file("extdata", "Blank_Template_Scrubbed_v2.0.xlsx",
                                package="serotrackr")
   wb <- openxlsx::loadWorkbook(path_template)
   openxlsx::writeData(wb = wb, sheet = "Data", x = data, startCol = 1,

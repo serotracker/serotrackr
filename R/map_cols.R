@@ -19,6 +19,8 @@
 #' @param result_cat column with values of "positive", "negative", or "borderline"
 #' @param include_others include additional columns or not
 #' @return A cleaned data.frame
+#' @import dplyr stringr
+#' @importFrom dplyr %>%
 #' @export
 #' @examples
 #' library(dplyr)
@@ -40,11 +42,11 @@
 #'          country = "Earth!",
 #'          collection_start_date = collection_start_date,
 #'          collection_end_date = collection_end_date,
+#'          test_id = assays$`SARS-CoV-2`$`EUROIMMUN - IgG - Anti-SARS-CoV-2 ELISA IgG`,
 #'          result = result,
 #'          result_cat = result_cat,
 #'          include_others = FALSE)
 #'
-#' @import dplyr stringr
 
 map_cols <- function(data,
                      dataset_id = NULL,
@@ -57,7 +59,7 @@ map_cols <- function(data,
                      city = NULL,
                      collection_start_date,
                      collection_end_date,
-                     test_id = NULL,
+                     test_id,
                      result,
                      result_cat,
                      include_others = FALSE) {
@@ -73,25 +75,24 @@ map_cols <- function(data,
 
   data <- data %>%
     dplyr::mutate(
-      age_min = stringr::str_extract({{age_group}}, "\\d+"),
-      age_max = stringr::str_extract({{age_group}}, "(\\d+)(?!.*\\d)"),
-      age_group = paste0(age_min, "-", age_max),
-      sex = dplyr::case_when(
-        grepl("f|female|woman|women", {{sex}}, ignore.case = TRUE) ~ "female",
-        grepl("m|male|man|men", {{sex}}, ignore.case = TRUE) ~ "male",
-        grepl("^na$|^n/a$", {{sex}}, ignore.case = TRUE) | is.na({{sex}}) ~ NA,
-        TRUE ~ "other"
-      ),
-      dplyr::across(dplyr::ends_with("date"), ~ as.Date(.)),
-      result = as.numeric(stringr::str_extract({{result}}, "\\d+\\.*\\d*")),
-      country = {{country}}
+      dataset_id = {{dataset_id}},
+      id = {{id}},
+      age_group = {{age_group}},
+      sex = {{sex}},
+      country = {{country}},
+      collection_start_date = {{collection_start_date}},
+      collection_end_date = {{collection_end_date}},
+      test_id = {{test_id}},
+      result = {{result}},
+      result_cat = {{result_cat}}
     ) %>%
-    fncols(c("state", "county", "city", "test_id"))
+    fncols(c("dataset_id", "id", "state", "county", "city"))
 
   if(!isTRUE(include_others)) {
-    data <- data %>% dplyr::select(dataset_id, id, age_group, sex, state,
-                            county, city, collection_start_date, collection_end_date,
-                            test_id, result, result_cat)
+    data <- data %>%
+      dplyr::select(dataset_id, id, age_group, sex, country, state, county,
+                    city, collection_start_date, collection_end_date, test_id,
+                    result, result_cat)
   }
   return(data)
 }
