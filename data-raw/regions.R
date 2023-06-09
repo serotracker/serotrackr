@@ -1,6 +1,6 @@
 ## code to prepare `regions` dataset goes here
 
-# rgeoboundaries ----------------------------------------------------------
+# Prerequisites -----------------------------------------------------------
 
 library(tidyverse)
 library(rgeoboundaries)
@@ -17,6 +17,10 @@ adm1_url <- "https://github.com/wmgeolab/geoBoundaries/raw/c3551f2ad79d8d3a1e5c5
 adm2_url <- "https://github.com/wmgeolab/geoBoundaries/raw/c3551f2ad79d8d3a1e5c5498592b4d80deb08062/releaseData/CGAZ/geoBoundariesCGAZ_ADM2.zip"
 meta_url <- "https://github.com/wmgeolab/geoBoundaries/raw/c3551f2ad79d8d3a1e5c5498592b4d80deb08062/releaseData/geoBoundariesOpen-meta.csv"
 
+
+
+# Metadata ----------------------------------------------------------------
+
 meta <- read_csv(meta_url) %>%
   select(boundaryID, boundaryName, boundaryISO, boundaryYearRepresented,
          boundaryType, boundaryCanonical, Continent,
@@ -27,6 +31,10 @@ meta <- read_csv(meta_url) %>%
                                   boundaryID == "AUS-ADM1-45165765" ~ "ADM1",
                                   TRUE ~ boundaryType))
 
+
+
+# geoBoundaries v4 --------------------------------------------------------
+
 # The rgeoboundaries package only is updated until version 4 of the maps, while
 # their github has been updated to version 5, with more accurate regions. It
 # also adds two separate lines in the adm0 sf object for disputed areas. On the
@@ -35,6 +43,12 @@ meta <- read_csv(meta_url) %>%
 adm0_gb_v4 <- gb_adm0(type = "CGAZ", quiet = FALSE) %>% tibble() %>% select(-geometry)
 adm1_gb_v4 <- gb_adm1(type = "CGAZ", quiet = FALSE) %>% tibble() %>% select(-geometry)
 adm2_gb_v4 <- gb_adm2(type = "CGAZ", quiet = FALSE) %>% tibble() %>% select(-geometry)
+
+
+
+
+# geoBoundaries v5 --------------------------------------------------------
+# ADM 0 -------------------------------------------------------------------
 
 download_shp <- function(url) {
   temp <- tempfile()
@@ -52,7 +66,7 @@ download_shp <- function(url) {
 # Contested areas are based on US Department of State definition:
 # 2023-06-03
 # Geoboundaries v5.0
-adm0_gb_v5 <- download_shp(adm0_url) %>%
+adm0_gb_v5_temp <- download_shp(adm0_url) %>%
   left_join(meta %>% filter(boundaryType == "ADM0"),
             by = c("shapeGroup" = "boundaryISO",
                    "shapeType" = "boundaryType")) %>%
@@ -69,7 +83,15 @@ adm0_gb_v5 <- download_shp(adm0_url) %>%
          Continent = case_when(row_number() == nrow(.) ~ "Africa",
                                row_number() == nrow(.) - 1 ~ "Mixed",
                                TRUE ~ boundaryName)) %>%
-  left_join(adm0_gb_v4 %>% select(shapeGroup, shapeID_v4 = shapeID))
+  left_join(adm0_gb_v4 %>% select(shapeGroup, shapeID_v4 = shapeID)) %>%
+  mutate(boundaryName = ifelse(boundaryName == "Holy See",
+                               "Vatican City", boundaryName),
+         across(c(boundaryName, Continent),
+                ~ ifelse(. == "Antartica", "Antarctica", .)))
+
+
+
+# ADM 1 -------------------------------------------------------------------
 
 adm1_gb_v5 <- download_shp(adm1_url) %>%
   mutate(shapeName = case_when(row_number() == nrow(.) ~
@@ -81,8 +103,26 @@ adm1_gb_v5 <- download_shp(adm1_url) %>%
          shapeType = ifelse(is.na(shapeType), "ADM1", shapeType)) %>%
   rename(shapeID_v5 = shapeID) %>%
   left_join(adm1_gb_v4 %>% rename(shapeID_v4 = shapeID, shapeISO_v4 = shapeISO),
-            by = c("shapeName", "shapeGroup", "shapeType"))
+            by = c("shapeName", "shapeGroup", "shapeType")) %>%
+  mutate(
+    # There are 2 ADM0s (Antarctica and Vatican City) in this ADM1 object.
+    # Replacing both with ADM1:
+    shapeType = "ADM1"
+  )
 
+
+# 'Antarctica' and 'Vatican City' have ADM1 shapes but not ADM0; Adding them:
+adm0_gb_v5 <- adm0_gb_v5_temp %>%
+  left_join(
+    by = join_by("boundaryName" == "shapeName"),
+    adm1_gb_v5 %>%
+      filter(shapeName %in% c("Antarctica", "Vatican City")) %>%
+      select(shapeName, shapeID_v5)
+  )
+
+
+
+# ADM 2 -------------------------------------------------------------------
 
 # adm2_gb_v5 does not have info about adm1 while some adm2s have the same name
 # in different adm1s. Thus, to join adm2_gb_v5 with adm2_gb_v4, there is no way
@@ -92,7 +132,8 @@ adm2_gb_v4_duplicates <- adm2_gb_v4 %>%
   filter(n() > 1) %>%
   pull(shapeName)
 
-adm2_gb_v5 <- download_shp(adm2_url) %>%
+
+adm2_gb_v5_temp <- download_shp(adm2_url) %>%
   mutate(shapeName = ifelse(!is.na(`_NAME`), str_to_title(`_NAME`), shapeName),
          shapeGroup = ifelse(!is.na(`_NAME`), "NPL", shapeGroup),
          shapeType = ifelse(!is.na(`_NAME`), "ADM2", shapeType)) %>%
@@ -149,7 +190,7 @@ adm2_gb_v5 <- download_shp(adm2_url) %>%
     ),
     shapeGroup = ifelse(row_number() == nrow(.), "ESH", shapeGroup),
     # There are 2 ADM0s and 312 ADM1s in this ADM2 object. Replacing
-    # all with ADM2, but DOUBLE CHECK later:
+    # all with ADM2, but DOUBLE CHECK later (likely correct):
     shapeType = ifelse(is.na(shapeType), "ADM2", "ADM2")
   ) %>%
   rename(shapeID_v5 = shapeID) %>%
@@ -160,7 +201,116 @@ adm2_gb_v5 <- download_shp(adm2_url) %>%
       filter(!(shapeName %in% adm2_gb_v4_duplicates))
   )
 
+# Remove version 4 data from those entries in version 5 that repeat 2 or more
+# times. This is done because it is unclear to which ADM1s those repeated
+# (duplicated) ADM2s belong. Therefore, they are removed here and should be
+# checked later while completeing the hierarchy info by hand:
+adm2_gb_v5_duplicates <- adm2_gb_v5_temp %>%
+  group_by(shapeGroup, shapeName) %>%
+  filter(n() > 1) %>%
+  pull(shapeName) %>%
+  unique()
+
+adm2_gb_v5 <- adm2_gb_v5_temp %>%
+  mutate(
+    across(
+      c(shapeISO_v4, shapeID_v4, ADM1_shape, ADM0_shape, ADMHIERARC),
+      ~ ifelse(shapeName %in% adm2_gb_v5_duplicates, NA, .)
+    )
+  )
+
+
 format(object.size(adm2_gb_v5), units = "Mb")
+
+
+
+# Binding rows of ADM0, ADM1, and ADM2 ------------------------------------
+
+merged_temp <- adm0_gb_v5 %>%
+  mutate(shapeISO_v4 = NA, ADM0_shape = NA, ADM1_shape = NA, ADMHIERARC = NA) %>%
+  select(shapeName = boundaryName, shapeID_v5, shapeGroup, shapeType,
+         shapeISO_v4, shapeID_v4, ADM1_shape, ADM0_shape, ADMHIERARC) %>%
+  bind_rows(
+    # 'Antarctica' and 'Vatican City' have ADM1 and ADM2 shapes so far; now
+    # them to ADM0s:
+    # adm1_gb_v5 %>%
+    #   filter(shapeName %in% c("Antarctica", "Vatican City")) %>%
+    #   mutate(shapeType = "ADM0") %>%
+    #   select(shapeName, shapeID_v5, shapeGroup, shapeType),
+    adm1_gb_v5 %>%
+      mutate(ADM1_shape = NA) %>%
+      select(shapeName, shapeID_v5, shapeGroup, shapeType,
+             shapeISO_v4, shapeID_v4, ADM1_shape, ADM0_shape, ADMHIERARC),
+    adm2_gb_v5
+  ) %>%
+  group_by(shapeGroup) %>%
+  mutate(
+    ADMHIERARC2 = ifelse(
+      !is.na(ADMHIERARC),
+      sapply(ADMHIERARC, function(x){
+        paste(shapeName[which(shapeID_v4 %in% unlist(strsplit(x, "|", fixed = TRUE)))],
+              collapse = "|")}),
+      NA
+    )
+  ) %>%
+  separate_wider_delim(cols = ADMHIERARC2, delim = "|", too_few = "align_start",
+                       names = c("NAME_0", "NAME_1", "NAME_2")) %>%
+  ungroup() %>%
+  # For some ADM2 records, corresponding ADM1s were not found during joining
+  # version 5 data with version 4. As a result, after doing separate_wider_delim(),
+  # their ADM2 name was written to NAME_1, instead of NAME_2. To correct that:
+  mutate(
+    NAME_2_dup = NAME_2,
+    NAME_2 = ifelse(shapeType=="ADM2" & !is.na(NAME_1) & is.na(NAME_2),
+                    NAME_1, NAME_2),
+    NAME_1 = ifelse(shapeType=="ADM2" & !is.na(NAME_1) & is.na(NAME_2_dup),
+                    NA, NAME_1),
+  ) %>%
+  select(-NAME_2_dup) %>%
+  # Fill in missing shapeIDs (unique ID of each shape):
+  mutate(shapeID_v5 = ifelse(is.na(shapeID_v5),
+                             as.character(row_number()), shapeID_v5))
+
+
+# For regions with the same shapeName across ADM levels, make their shapeIDs unique:
+shapeID_v5_duplicate <- merged_temp %>%
+  group_by(shapeID_v5) %>%
+  filter(n() > 1) %>%
+  pull(shapeID_v5)
+
+
+merged_final <- merged_temp %>%
+  left_join(adm0_gb_v5 %>% select(shapeGroup, boundaryName_adm0 = boundaryName),
+            by = "shapeGroup") %>%
+  mutate(
+    shapeID_v5 = ifelse(shapeID_v5 %in% shapeID_v5_duplicate,
+                        paste0(shapeID_v5, shapeType),
+                        shapeID_v5),
+    NAME_0 = ifelse(is.na(NAME_0), boundaryName_adm0, NAME_0),
+    NAME_1 = ifelse(shapeType=="ADM1" & is.na(NAME_1), shapeName, NAME_1),
+    NAME_2 = ifelse(shapeType=="ADM2" & is.na(NAME_2), shapeName, NAME_2)
+  ) %>%
+  select(-boundaryName_adm0)
+
+
+
+# Write to xlsx for external hierarchy checking ---------------------------
+
+library(openxlsx)
+
+adm1_hierar_checking <- merged_final %>%
+  filter(shapeType == "ADM1") %>%
+  select(country = NAME_0, adm_level_1 = NAME_1, shapeID_v5) %>%
+  arrange(country, adm_level_1)
+
+adm2_hierar_checking <- merged_final %>%
+  filter(shapeType == "ADM2") %>%
+  select(country = NAME_0, adm_level_1 = NAME_1, adm_level_2 = NAME_2,
+         shapeID_v5) %>%
+  arrange(country, adm_level_1, adm_level_2)
+
+# write.xlsx(adm1_hierar_checking, file = "adm1_hierar_checking.xlsx")
+# write.xlsx(adm2_hierar_checking, file = "adm2_hierar_checking.xlsx")
 
 
 
