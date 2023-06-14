@@ -5,7 +5,7 @@
 #' A list of assays for different pathogens. This list can be used in the map_cols() function to select assays.
 #'
 #' @format `assays`
-#' A list
+#' A nested named list
 #'
 #' @source Based on the list of assays gathered by SeroTracker for SARS-CoV-2
 #' @examples

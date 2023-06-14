@@ -1,7 +1,14 @@
 ## code to prepare `assays_df` and `assays` datasets goes here
 
+# Removed the source "inst/extdata/Immunoassays.csv" file after running this
+# script to keep the packages size under 5 Mb. This "Immunoassays.csv" file
+# was exported directly from Airtable.
+
 library(tidyverse)
 library(janitor)
+
+
+# Clean assay data from Airtable ------------------------------------------
 
 assays_df <- read_csv("inst/extdata/Immunoassays.csv") %>%
   clean_names() %>%
@@ -13,6 +20,9 @@ assays_df <- read_csv("inst/extdata/Immunoassays.csv") %>%
                        is.na(.) ~ FALSE))
   )
 
+
+# Generate nested named list of assays ------------------------------------
+
 assays <- list()
 for (i in 1:length(unique(assays_df$pathogen))) {
   temp <- assays_df %>%
@@ -23,6 +33,9 @@ for (i in 1:length(unique(assays_df$pathogen))) {
   assays[[unique(assays_df$pathogen)[i]]] <- c(assays[[unique(assays_df$pathogen)[i]]],
                                                temp)
 }
+
+
+# Export data -------------------------------------------------------------
 
 usethis::use_data(assays_df, overwrite = TRUE)
 usethis::use_data(assays, overwrite = TRUE)

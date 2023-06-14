@@ -341,7 +341,7 @@ regions_df <- merged_final %>%
 
 
 
-# Regions nested list -----------------------------------------------------
+# Regions nested named list -----------------------------------------------
 
 regions_adm0 <- merged_final %>%
   filter(shapeType == "ADM0") %>%
