@@ -5,7 +5,7 @@
 \alias{assays}
 \title{Assays list}
 \format{
-`assays`
+\code{assays}
 A nested named list
 }
 \source{
