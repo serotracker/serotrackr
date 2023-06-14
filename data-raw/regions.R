@@ -5,6 +5,10 @@
 library(tidyverse)
 library(rgeoboundaries)
 library(sf)
+library(openxlsx)
+library(conflicted)
+conflict_prefer("select", "dplyr")
+conflict_prefer("filter", "dplyr")
 
 
 # I preferred geographic data (polygons) from geoBoundaries, instead of GADM,
@@ -55,7 +59,8 @@ download_shp <- function(url) {
   temp2 <- tempfile()
   download.file(url, temp)
   unzip(zipfile = temp, exdir = temp2)
-  data <- read_sf(temp2) %>% tibble() %>% select(-geometry)
+  data <- read_sf(temp2)
+  # %>% tibble() %>% select(-geometry)
   unlink(c(temp, temp2))
   return(data)
 }
@@ -93,7 +98,7 @@ adm0_gb_v5_temp <- download_shp(adm0_url) %>%
 
 # ADM 1 -------------------------------------------------------------------
 
-adm1_gb_v5 <- download_shp(adm1_url) %>%
+adm1_gb_v5_temp <- download_shp(adm1_url) %>%
   mutate(shapeName = case_when(row_number() == nrow(.) ~
                                  "Disputed territory of Western Sahara",
                                row_number() == nrow(.) - 1 ~
@@ -108,7 +113,30 @@ adm1_gb_v5 <- download_shp(adm1_url) %>%
     # There are 2 ADM0s (Antarctica and Vatican City) in this ADM1 object.
     # Replacing both with ADM1:
     shapeType = "ADM1"
-  )
+  ) %>%
+  relocate(geometry, .after = last_col())
+
+
+# The ADM1 data has a mistake between two adjacent provinces of Iran. The
+# shapeID_v5 '17685810B88307134464360' is labeled as Mazandaran province but
+# it is a subset of the Golestan province and should be combined with it:
+Golestan_Iran <- adm1_gb_v5_temp %>%
+  filter(shapeName == "Golestan") %>%
+  tibble() %>% select(-geometry)
+
+adm1_gb_v5 <- adm1_gb_v5_temp %>%
+  filter(shapeID_v5 == "17685810B88307134464360" | shapeName == "Golestan") %>%
+  st_union() %>% st_as_sf() %>% rename(geometry = x) %>%
+  mutate(shapeName = "Golestan") %>%
+  left_join(Golestan_Iran, by = "shapeName") %>%
+  bind_rows(
+    adm1_gb_v5_temp %>%
+      filter(
+        (shapeID_v5 != "17685810B88307134464360" | is.na(shapeID_v5)) &
+          shapeName != "Golestan"
+      )
+  ) %>%
+  tibble() %>% select(-geometry)
 
 
 # 'Antarctica' and 'Vatican City' have ADM1 shapes but not ADM0; Adding them:
@@ -117,8 +145,9 @@ adm0_gb_v5 <- adm0_gb_v5_temp %>%
     by = join_by("boundaryName" == "shapeName"),
     adm1_gb_v5 %>%
       filter(shapeName %in% c("Antarctica", "Vatican City")) %>%
-      select(shapeName, shapeID_v5)
-  )
+      tibble() %>% select(shapeName, shapeID_v5)
+  ) %>%
+  tibble() %>% select(-geometry)
 
 
 
@@ -217,7 +246,8 @@ adm2_gb_v5 <- adm2_gb_v5_temp %>%
       c(shapeISO_v4, shapeID_v4, ADM1_shape, ADM0_shape, ADMHIERARC),
       ~ ifelse(shapeName %in% adm2_gb_v5_duplicates, NA, .)
     )
-  )
+  ) %>%
+  tibble() %>% select(-geometry)
 
 
 format(object.size(adm2_gb_v5), units = "Mb")
@@ -231,12 +261,6 @@ merged_temp <- adm0_gb_v5 %>%
   select(shapeName = boundaryName, shapeID_v5, shapeGroup, shapeType,
          shapeISO_v4, shapeID_v4, ADM1_shape, ADM0_shape, ADMHIERARC) %>%
   bind_rows(
-    # 'Antarctica' and 'Vatican City' have ADM1 and ADM2 shapes so far; now
-    # them to ADM0s:
-    # adm1_gb_v5 %>%
-    #   filter(shapeName %in% c("Antarctica", "Vatican City")) %>%
-    #   mutate(shapeType = "ADM0") %>%
-    #   select(shapeName, shapeID_v5, shapeGroup, shapeType),
     adm1_gb_v5 %>%
       mutate(ADM1_shape = NA) %>%
       select(shapeName, shapeID_v5, shapeGroup, shapeType,
@@ -248,7 +272,8 @@ merged_temp <- adm0_gb_v5 %>%
     ADMHIERARC2 = ifelse(
       !is.na(ADMHIERARC),
       sapply(ADMHIERARC, function(x){
-        paste(shapeName[which(shapeID_v4 %in% unlist(strsplit(x, "|", fixed = TRUE)))],
+        paste(shapeName[which(shapeID_v4 %in%
+                                unlist(strsplit(x, "|", fixed = TRUE)))],
               collapse = "|")}),
       NA
     )
@@ -293,45 +318,93 @@ merged_final <- merged_temp %>%
   select(-boundaryName_adm0)
 
 
+regions_df <- merged_final %>%
+  select(shapeGroup, shapeType, NAME_0, NAME_1, NAME_2, shapeID_v5)
+
+
 
 # Write to xlsx for external hierarchy checking ---------------------------
 
-library(openxlsx)
-
-adm1_hierar_checking <- merged_final %>%
-  filter(shapeType == "ADM1") %>%
-  select(country = NAME_0, adm_level_1 = NAME_1, shapeID_v5) %>%
-  arrange(country, adm_level_1)
-
-adm2_hierar_checking <- merged_final %>%
-  filter(shapeType == "ADM2") %>%
-  select(country = NAME_0, adm_level_1 = NAME_1, adm_level_2 = NAME_2,
-         shapeID_v5) %>%
-  arrange(country, adm_level_1, adm_level_2)
+# adm1_hierar_checking <- merged_final %>%
+#   filter(shapeType == "ADM1") %>%
+#   select(country = NAME_0, adm_level_1 = NAME_1, shapeID_v5) %>%
+#   arrange(country, adm_level_1)
+#
+# adm2_hierar_checking <- merged_final %>%
+#   filter(shapeType == "ADM2") %>%
+#   select(country = NAME_0, adm_level_1 = NAME_1, adm_level_2 = NAME_2,
+#          shapeID_v5) %>%
+#   arrange(country, adm_level_1, adm_level_2)
 
 # write.xlsx(adm1_hierar_checking, file = "adm1_hierar_checking.xlsx")
 # write.xlsx(adm2_hierar_checking, file = "adm2_hierar_checking.xlsx")
 
 
 
-# Testing -----------------------------------------------------------------
+# Regions nested list -----------------------------------------------------
 
-# Making named lists out of region names for easy selection by users:
+regions_adm0 <- merged_final %>%
+  filter(shapeType == "ADM0") %>%
+  arrange(NAME_0) %>%
+  select(NAME_0, shapeID_v5) %>%
+  pivot_wider(names_from = NAME_0, values_from = shapeID_v5) %>%
+  as.list()
 
-adm1_gb_v5_noNA <- adm1_gb_v5 %>% drop_na(shapeGroup)
-adm1 <- list()
-for (i in 1:length(unique(adm1_gb_v5_noNA$shapeGroup))) {
-  temp <- adm1_gb_v5_noNA %>%
-    filter(shapeGroup == unique(adm1_gb_v5_noNA$shapeGroup)[i]) %>%
-    select(shapeName) %>%
-    distinct(shapeName) %>%
-    pivot_wider(names_from = shapeName, values_from = shapeName) %>%
+
+
+regions_adm1 <- list()
+for (i in 1:length(unique(merged_final$NAME_0))) {
+  adm1_list <- merged_final %>%
+    filter(shapeType == "ADM1") %>%
+    arrange(NAME_0, NAME_1) %>%
+    filter(NAME_0 == sort(unique(merged_final$NAME_0))[i]) %>%
+    select(NAME_1, shapeID_v5) %>%
+    pivot_wider(names_from = NAME_1, values_from = shapeID_v5) %>%
     as.list()
-  adm1[[unique(adm1_gb_v5_noNA$shapeGroup)[i]]] <- c(adm1[[unique(adm1_gb_v5_noNA$shapeGroup)[i]]],
-                                                     temp)
+  regions_adm1[[sort(unique(merged_final$NAME_0))[i]]] <-
+    c(regions_adm1[[sort(unique(merged_final$NAME_0))[i]]], adm1_list)
 }
 
-adm1$CAN$`British Columbia`
 
 
-# usethis::use_data(regions, overwrite = TRUE)
+regions_adm2 <- list()
+merged_final_noNA <- merged_final %>%
+  filter(shapeType == "ADM2") %>%
+  drop_na(NAME_1)
+for (i in 1:length(unique(merged_final_noNA$NAME_0))) {
+  per_adm0 <- merged_final_noNA %>%
+    # filter(shapeType == "ADM2") %>%
+    arrange(NAME_0, NAME_1, NAME_2) %>%
+    filter(NAME_0 == sort(unique(merged_final_noNA$NAME_0))[i])
+
+  adm1_adm2_list <- list()
+  for (j in 1:length(unique(per_adm0$NAME_1))) {
+    adm2_list <- per_adm0 %>%
+      filter(NAME_1 == unique(per_adm0$NAME_1)[j]) %>%
+      select(NAME_2, shapeID_v5) %>%
+      pivot_wider(names_from = NAME_2, values_from = shapeID_v5) %>%
+      as.list()
+    adm1_adm2_list[[unique(per_adm0$NAME_1)[j]]] <-
+      c(adm1_adm2_list[[unique(per_adm0$NAME_1)[j]]], adm2_list)
+  }
+
+  regions_adm2[[sort(unique(merged_final_noNA$NAME_0))[i]]] <-
+    c(regions_adm2[[sort(unique(merged_final_noNA$NAME_0))[i]]], adm1_adm2_list)
+}
+
+
+
+regions <- list(adm0 = regions_adm0, adm1 = regions_adm1, adm2 = regions_adm2)
+
+# Sample usage:
+# regions$adm2$`United Kingdom`$England$Leeds
+
+format(object.size(regions), unit = "Mb")
+format(object.size(regions_df), unit = "Mb")
+
+
+
+# Export data -------------------------------------------------------------
+
+usethis::use_data(regions, overwrite = TRUE)
+usethis::use_data(regions_df, overwrite = TRUE)
