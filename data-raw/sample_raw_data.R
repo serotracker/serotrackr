@@ -4,7 +4,7 @@
 # validation considerations. This sample raw data is included in the package
 # for users.
 
-sample_raw_data <- data.frame(
+sample_raw_data <- tibble(
   dataset_id = 1,
   id = 1:3,
   age = c("0 - 10", "20-30", "30,40"),
