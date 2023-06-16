@@ -1,0 +1,80 @@
+---
+title: "serotrackr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{serotrackr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+serotrackr helps you prepare your raw data for submission to [SeroTracker](https://serotracker.com){target="_blank"}. We will use a sample raw dataset included in the package to demonstrate the workflow of serotrackr:
+
+```{r setup, message=FALSE}
+library(serotrackr)
+library(dplyr)
+
+sample_raw_data
+```
+
+
+Here are the steps you should follow:
+
+## 1) Map your coloumns
+
+Among the columns in your raw data, specify those that SeroTracker requires using the `map_cols()` function:
+
+```{r}
+df <- map_cols(
+  sample_raw_data,
+  dataset_id = dataset_id,
+  id = id,
+  age_group = age,
+  sex = sex,
+  country = "Canada",
+  state = state,
+  city = city,
+  collection_start_date = collection_start_date,
+  collection_end_date = collection_end_date,
+  test_id = assays$`SARS-CoV-2`$`EUROIMMUN - IgG - Anti-SARS-CoV-2 ELISA IgG`,
+  result = result,
+  result_cat = result_cat,
+  include_others = FALSE
+)
+```
+
+## 2) Clean data
+
+The `clean()` function will apply required validations to your data:
+
+```{r}
+df_cleaned <- clean(df)
+df_cleaned
+```
+
+## 3) Generate aggregate estimates
+
+To be completed.
+
+## 4) Adjust the estimates
+
+To be completed.
+
+## 5) Calculate 95% CIs
+
+To be completed.
+
+## 6) Export to Excel for submission
+The `save_xlsx()` function exports the clean data in an Excel format.
+
+```{r}
+save_xlsx(df_cleaned, path = tempfile())
+```
+
+Some fields, mostly metadata, in the exported document will still need to be filled in. The first sheet of the document has the necessary instructions. When you are done, the document is ready to be submitted on [SeroTracker.com](https://serotracker.com){target="_blank"}.
