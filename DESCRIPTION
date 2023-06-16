@@ -2,8 +2,8 @@ Package: serotrackr
 Type: Package
 Title: Facilitates Submissions to SeroTracker
 Version: 0.1.0
-Author: Reza Hosseini
-Maintainer: Reza Hosseini <rezahs@alum.ubc.ca>
+Author: Placeholder
+Maintainer: Placeholder <email@domain.ca>
 Description: serotrackr is a package specifically developed to help users prepare their raw data for submission to the SeroTracker platform. 
     This happens through several steps represented by one function each; 1) mapping the columns from raw data to those required for submission, 2) cleaning the raw data, 3) generating aggregate estimayes, 4) adjusting the estimates, 5) exporting the final data to a xlsx file where the remaining fields can be filled out by the user before submission on SeroTracker.com.
 License: MIT + file LICENSE
@@ -11,6 +11,8 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 Suggests: 
+    knitr,
+    rmarkdown,
     roxygen2,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -21,3 +23,4 @@ Imports:
 Depends: 
     R (>= 2.10)
 Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr
