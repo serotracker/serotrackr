@@ -8,4 +8,11 @@
 \description{
 serotrackr is a package specifically developed to help users prepare their raw data for submission to the SeroTracker platform. This happens through several steps represented by one function each; 1) mapping the columns from raw data to those required for submission, 2) cleaning the raw data, 3) generating aggregate estimayes, 4) adjusting the estimates, 5) exporting the final data to a xlsx file where the remaining fields can be filled out by the user before submission on SeroTracker.com.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://serotracker.github.io/serotrackr/}
+}
+
+}
 \keyword{internal}
