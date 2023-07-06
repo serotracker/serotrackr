@@ -35,6 +35,7 @@ sample_raw_data
 
 # map_cols() --------------------------------------------------------------
 
+# TODO id must be required!
 map_cols <- function(data,
                      adm0,
                      collection_start_date,
@@ -338,123 +339,150 @@ map_cols(a, adm0 = regions$adm0$Iraq)
 
 # Testing -----------------------------------------------------------------
 
-mydf2 <- tibble(orig_age = c(23, 45, 67), orig_sex = c("M", "F", "F"))
 
+# mydf2 <- tibble(orig_age = c(23, 45, 67), orig_sex = c("M", "F", "F"))
+mydf2 <- tibble(
+  orig_age = sample.int(100, 100000000, replace = TRUE),
+  orig_sex = sample(c("Male", "Female", "Other"), 100000000, replace = TRUE)
+)
+
+
+custom_msg <- function(arg, msg, error = FALSE) {
+  paste(
+    ifelse(error,
+           paste(cli::col_red(cli::symbol$cross), cli::bg_red(arg)),
+           paste(cli::col_green(cli::symbol$tick), cli::bg_green(arg))),
+    ifelse(error,
+           cli::col_none(cli::format_inline(msg)),
+           cli::col_grey(cli::format_inline(msg)))
+  )
+}
+
+# Based on cli::cli_progress_step(). Changes are commented below:
+# Reza changed the line below:
+my_progress <- function (msg, msg_done, error = FALSE, msg_failed = msg,
+                         spinner = FALSE, class = if (!spinner) ".alert-info",
+                         current = TRUE, .auto_close = TRUE,
+                         .envir = parent.frame(), ...)
+{
+  format <- paste0(if (!is.null(class)) paste0("{", class, " "),
+                   if (spinner) "{cli::pb_spin} ",
+                   msg, " ...",
+                   if (!is.null(class)) "}")
+  # Reza changed the two lines below:
+  ts <- cli::col_cyan(" [{cli::pb_elapsed}]")
+  # format_done <- paste0(msg_done, ts)
+  format_done <- paste0(custom_msg(msg, msg_done, error), ts)
+  format_failed <- paste0("{.alert-danger ", msg_failed, ts, "}")
+  opt <- options(cli.progress_show_after = 0)
+  on.exit(options(opt), add = TRUE)
+  id <- cli::cli_progress_bar(
+    type = "custom", format = format, format_done = format_done,
+    format_failed = format_failed, clear = FALSE, current = current,
+    .auto_close = .auto_close, .envir = .envir, ...
+  )
+  cli::cli_progress_update(id = id, force = TRUE, .envir = .envir)
+  invisible(id)
+}
+
+
+# REPLACE `is.name(substitute(age))` WITH `quo_is_symbol()`
+# because myfun() currently takes a long time to assess `age`.
 
 myfun <- function(data, age, sex) {
 
-  color_text <- function(color, text) {
-    cli::cli_div(theme = list(span = list(color = color)))
-    cli::cli_par()
-    cli::cli_text(paste0("{.span ", text, "}"))
-    cli::cli_end()
-  }
-  my_rule <- function(left, ..., color = "cyan") {
-    cli::cli_div(theme = list(rule = list(color = color)))
-    cli::cli_rule(left, ...)
-    cli::cli_end()
-  }
+  cli::cli_h1(cli::col_cyan("Mapping and validating columns"))
+  error_count <- 0
 
-  # cli::cli_h1("Mapping columns")
-  my_rule("Mapping and validating columns")
-  created_error <- FALSE
+  # age ---------------------------------------------------------------------
 
-  if (is.name(substitute(age))) {
+  if (rlang::is_symbol(age)) {
+  # if (is.name(substitute(age))) {
     data <- data %>% dplyr::rename(new_age = {{age}})
-    cli::cli_alert_success("`age` as a column name")
-  } else if (is.numeric(substitute(age))) {
+    my_progress('age', 'is a column name')
+
+  } else if (rlang::is_double(age, n=1)) {
+  # } else if (is.numeric(substitute(age))) {
     data <- data %>% dplyr::mutate(new_age = {{age}})
-    cli::cli_alert_success("`age` as a number")
+    my_progress('age', 'is a number')
+
   } else if (!is.null(age)) {
-    cli::cli_alert_danger(paste0("`age` must be a number or column name; not ",
-                                 typeof(age), "."))
-    created_error <- TRUE
+    my_progress('age', paste0('must be a number or column name; not ',
+                              typeof(age), '.'), error = TRUE)
+    error_count <- error_count + 1
   }
+  cli::cli_progress_update()
+
+  # sex ---------------------------------------------------------------------
 
   if (is.name(substitute(sex))) {
     data <- data %>% dplyr::rename(new_sex = {{sex}})
-    cli::cli_alert_success("`{.emph sex}` as a column name")
+    my_progress("sex", "is a column name")
+
   } else if (is.character(substitute(sex))) {
     data <- data %>% dplyr::mutate(new_sex = {{sex}})
-    cli::cli_alert_success("`{sex}` as a string")
-  } else if (!is.null(sex)) {
-    cli::cli_alert_danger("`{.emph sex}` must be a string or column name")
-    created_error <- TRUE
-  }
+    my_progress("sex", "is a string")
 
-  # cli::cli_h1("Validation finished")
-  my_rule("Validation finished")
-  if (isTRUE(created_error)) {
-    cli::cli_par(); cli::cli_end()
-    cli::cli_abort("Validated df not created. Please address the issues first.")
+  } else if (!is.null(sex)) {
+    my_progress("sex", "must be a string or column name.", error = TRUE)
+    error_count <- error_count + 1
+  }
+  cli::cli_progress_update()
+
+  # Result ------------------------------------------------------------------
+
+  cli::cli_progress_done()
+  cli::cli_h1(cli::col_cyan("Validation finished"))
+  if (error_count > 0) {
+    cli::cli_abort(
+      paste(cli::col_red("{error_count} error{?s}!"),
+            "Please address {?it/them} first. Validated df not created.")
+    )
   }
   else {
-    color_text("green", "{cli::symbol$tick} Success! Validated df created.")
-
+    cli::cli_text(paste(cli::col_green("Success!"), "Validated df created."))
+    cli::cli_par(); cli::cli_end()
     return(data)
   }
 }
 
 
-cli::cli_div(theme = list(span = list(color = "green")))
-cli::cli_text("{.span Success! Validated df created.}")
-cli::cli_end()
-
-color_text <- function(color, text) {
-  cli::cli_div(theme = list(span = list(color = color)))
-  cli::cli_par()
-  cli::cli_text(paste0("{.span ", text, "}"))
-  cli::cli_end()
-}
-
-
-cli::col_green("reaz")
-
-myfun(mydf2, age = 32, sex = "Male") %>% dplyr::select(orig_age)
+myfun(mydf2, age = "32", sex = "F") %>% dplyr::select(orig_age)
 myfun(mydf2, sex = "Male")
 myfun(mydf2)
 
+rlang::quo_is_symbol()
+rlang::is_string(c("t", "r"))
+rlang::is_double(c(2, 3), n=1)
 
+a <- function(age) {
+  # age <- enquo(age)
+  # if (rlang::is_double(age, n=1)) {print("Working")}
+  if (rlang::is_symbol(age)) {print("Working")}
+  else {print("Not working")}
+}
+a(age = c(32, 2))
+a(age = v)
 
-
-library(rlang)
-ls("package:rlang")
-
-
-cli::cat_boxx(c("test 1", "test 2"))
-tryCatch()
-library(cli); ls("package:cli")
-cli_progress_bar()
-cli_h1("Heading 1")
-cli_rule(left = "Compiling {.pkg mypackage}")
-
-d <- cli_div(theme = list(rule = list(color = "cyan", "line-type" = "double")))
-cli_rule("Summary", right = "{.pkg mypackage}")
-cli_end(d)
-
-# Aggregate all abort messages in one place ...
+# Add github logo and url to pkgdown
+# Add source link to each vignette
+# Add progress bar or equivalent
 
 filter
 abort()
 quo_is_null()
 rlang::quo_is_call()
-rename
-print
 
-e <- rlang::catch_cnd(
-  cli::cli_abort("There is a problem!")
-)
-class(e)
-e
 
-library(cli)
-fun <- function() {
-  cli_par()
-  cli_alert_success("This is some text.")
-  cli_alert_danger("Some more text.")
-  cli_end()
-  cli_par()
-  cli_alert_success("Already a new paragraph.")
-  cli_end()
-}
-fun()
+demo_spinners(which = "simpleDots")
+
+
+
+# S3 and S4 ---------------------------------------------------------------
+
+setClass("Person", representation(name = "character", age = "numeric"))
+hadley <- new("Person", name = "Hadley", age = 31)
+class(hadley)
+typeof(hadley)
+rules
+slot(hadley, "age")

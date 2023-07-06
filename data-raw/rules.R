@@ -1,0 +1,294 @@
+## code to prepare (validation) `rules` goes here. It is an internal object.
+
+# Validation rules --------------------------------------------------------
+
+rules <- validate::validator(
+
+  ## dataset_id --------------------------------------------------------------
+  dataset_id_isNum = is.numeric(dataset_id),
+
+  ## id ----------------------------------------------------------------------
+  id_isUnique = validate::is_unique(
+    id, collection_start_date, collection_end_date, test_id, result
+  ) %in% TRUE,
+
+  ## age_group ---------------------------------------------------------------
+  age_group_dashPlus = if(!is.na(age_group)) grepl(
+    paste0("^[0-9]\\d*(\\.\\d+)?-[0-9]\\d*(\\.\\d+)?$", # 18-64 or 0.5-10.5
+           "|", "^[0-9]\\d*(\\.\\d+)?\\+$"), # 65+ or 65.5+
+    age_group
+  ) else NA,
+  # `lower_age` catches number before both dash and plus signs:
+  lower_age := stringr::str_extract(age_group, "^.*(?=((\\-|\\+)))") %>%
+    as.numeric(),
+  upper_age := stringr::str_extract(age_group, "(?<=\\-).*$") %>% as.numeric(),
+  # Rules below are specific to dash structure like 18-64 or 0.5-10.5:
+  age_group_upLTE120 = if(
+    grepl("^[0-9]\\d*(\\.\\d+)?-[0-9]\\d*(\\.\\d+)?$", age_group) == TRUE
+  ) upper_age <= 120 else NA,
+  age_group_lowLTEup = if(
+    grepl("^[0-9]\\d*(\\.\\d+)?-[0-9]\\d*(\\.\\d+)?$", age_group) == TRUE
+  ) lower_age <= upper_age else NA,
+  # Rule below is specific to plus structure like 65+ or 65.5+:
+  age_group_plusInRange = if(grepl("^[0-9]\\d*(\\.\\d+)?\\+$", age_group)==TRUE)
+    validate::in_range(lower_age, 0, 120, strict = TRUE) == TRUE else NA,
+
+  ## age ---------------------------------------------------------------------
+  age_isNum = is.numeric(age),
+  age_notInf = !is.infinite(age),
+  age_GTE0 = if(is.numeric(age) & !is.infinite(age)) age >= 0 else NA,
+  age_LTE120 = if(is.numeric(age) & !is.infinite(age)) age <= 120 else NA,
+  age_GTElowerAge = age >= lower_age,
+  age_LTEupperAge = age <= upper_age,
+
+  ## sex ---------------------------------------------------------------------
+  sex_presetVal = if(!is.na(sex))
+    grepl("^f$|^female$|^m$|^male$|^o$|^other$", sex,
+          ignore.case = TRUE) else NA,
+
+  ## adm0 --------------------------------------------------------------------
+  adm0_presetVal = adm0 %in%
+    dplyr::pull(dplyr::filter(regions_df, shapeType=="ADM0"), shapeID_v5),
+
+  ## adm1 --------------------------------------------------------------------
+  adm1_presetVal = adm1 %in%
+    dplyr::pull(dplyr::filter(regions_df, shapeType=="ADM1"), shapeID_v5),
+
+  ## adm2 --------------------------------------------------------------------
+  adm2_presetVal = adm2 %in%
+    dplyr::pull(dplyr::filter(regions_df, shapeType=="ADM2"), shapeID_v5),
+
+  ## collection_start_date ---------------------------------------------------
+  start_date_validStr = if(!is.na(collection_start_date))
+    grepl("^\\d{4}-\\d{2}-\\d{2}$", collection_start_date) else NA,
+  start_date_isConvertible = if(
+    grepl("^\\d{4}-\\d{2}-\\d{2}$", collection_start_date) == TRUE
+  ) sapply(collection_start_date,
+           function(x) {
+             class(try(as.Date(x), silent=TRUE)) != "try-error"
+           }) %vin% TRUE else NA,
+  start_date_GTE2000 = sapply(
+    collection_start_date,
+    function (x) {
+      if(grepl("^\\d{4}-\\d{2}-\\d{2}$", x) == TRUE) {
+        if (class(try(as.Date(x), silent=TRUE)) != "try-error") {
+          as.Date(x) >= as.Date("2000-01-01")
+        }  else NA
+      } else NA
+    }
+  ) %vin% TRUE,
+  start_date_LTEtoday = sapply(
+    collection_start_date,
+    function (x) {
+      if(grepl("^\\d{4}-\\d{2}-\\d{2}$", x) == TRUE) {
+        if (class(try(as.Date(x), silent=TRUE)) != "try-error") {
+          as.Date(x) <= as.Date(Sys.time())
+        }  else NA
+      } else NA
+    }
+  ) %vin% TRUE,
+
+  ## collection_end_date -----------------------------------------------------
+  end_date_validStr = if(!is.na(collection_end_date))
+    grepl("^\\d{4}-\\d{2}-\\d{2}$", collection_end_date) else NA,
+  end_date_isConvertible = if(
+    grepl("^\\d{4}-\\d{2}-\\d{2}$", collection_end_date) == TRUE
+  ) sapply(collection_end_date,
+           function(x) {
+             class(try(as.Date(x), silent=TRUE)) != "try-error"
+           }) %vin% TRUE else NA,
+  end_date_GTE2000 = sapply(
+    collection_end_date,
+    function (x) {
+      if(grepl("^\\d{4}-\\d{2}-\\d{2}$", x) == TRUE) {
+        if (class(try(as.Date(x), silent=TRUE)) != "try-error") {
+          as.Date(x) >= as.Date("2000-01-01")
+        }  else NA
+      } else NA
+    }
+  ) %vin% TRUE,
+  end_date_LTEtoday = sapply(
+    collection_end_date,
+    function (x) {
+      if(grepl("^\\d{4}-\\d{2}-\\d{2}$", x) == TRUE) {
+        if (class(try(as.Date(x), silent=TRUE)) != "try-error") {
+          as.Date(x) <= as.Date(Sys.time())
+        }  else NA
+      } else NA
+    }
+  ) %vin% TRUE,
+
+  # TODO either use if else in map_cols() to only use collection_start_date and
+  # collection_end_date values that are 1) valid structure, 2) convertible,
+  # and 3) between 2000 and today, or update the rule below to require all those
+  # conditions before running it:
+  end_date_GTEstart = collection_end_date >= collection_start_date,
+
+  ## test_id -----------------------------------------------------------------
+  test_id_presetVal = test_id %in% dplyr::pull(assays_df, test_id),
+
+  ## result ------------------------------------------------------------------
+  result_isNum = is.numeric(result),
+  result_GTE0 = if(is.numeric(result)) result >= 0 else NA,
+
+  ## result_cat --------------------------------------------------------------
+  result_cat_presetVal = if(!is.na(result_cat))
+    grepl("^positive$|^borderline$|^negative$", result_cat,
+          ignore.case = TRUE) else NA
+
+) # validator() closes
+
+
+names(rules["V04"]) <- "lower_age"
+names(rules["V05"]) <- "upper_age"
+
+
+# Error messages ----------------------------------------------------------
+
+# Using the `description` metadata of the "validator" object to store the body
+# of error messages that, if invoked, the map_cols() will show. The header
+# (argument name) of these error messages will be entered separately in the
+# my_progress().
+validate::description(rules) <- c(
+  # dataset_id_isNum
+  "must be a numeric column, not .",
+  # id_isUnique
+  paste("is not unique. Some records have identical values for all these",
+        "arguments: {.emph id}, {.emph collection_start_date},",
+        "{.emph collection_end_date}, {.emph test_id}, and {.emph result}.",
+        "First few are: "),
+  # age_group_dashPlus
+  paste("must have one of these two structures: `{.emph number-number}` or",
+        "`{.emph number+}`; e.g `18-64` or `65+`. First few values that",
+        "invoked the error are: "),
+  # lower_age
+  NA,
+  # upper_age
+  NA,
+  # age_group_upLTE120
+  paste("upper bound can't be larger than 120 years. First few invalid values",
+        "are: "),
+  # age_group_lowLTEup
+  paste("lower bound can't be larger than its upper bound. First few invalid",
+        "values are: "),
+  # age_group_plusInRange
+  paste("must be between 0 and 120 not inclusive, when it has a `{.emph",
+        "number+}` structure, like 65+."),
+  # age_isNum
+  NA,
+  # age_notInf
+  NA,
+  # age_GTE0
+  "can't be negative. First few invalid values are: ",
+  # age_LTE120
+  "can't be larger than 120 years. First few invalid values are: ",
+  # age_GTElowerAge
+  paste("can't be less than the lower bound of its corresponding `age_group`",
+        "value. First few inavlid values are: "),
+  # age_LTEupperAge
+  paste("can't be greater than the upper bound of its corresponding `age_group`",
+        "value. First few inavlid values are: "),
+  # sex_presetVal
+  paste("must only be one of these values, ignoring case: `{.emph f}`,",
+        "`{.emph m}`, `{.emph o}`, `{.emph female}`, `{.emph male}`, or",
+        "`{.emph other}`. First few invalid values are: "),
+  # adm0_presetVal
+  paste("code was not found. Use `{.pkg serotrackr}::regions$adm0${.emph",
+        "YourCountry}`. First few values that invoked the error are: "),
+  # adm1_presetVal
+  paste("codes were not found. Use `{.pkg serotrackr}::",
+        "regions$adm1${.emph YourCountry}${.emph YourState}`. First few",
+        "values that invoked the error are: "),
+  # adm2_presetVal
+  paste("codes were not found. Use",
+        "`{.pkg serotrackr}::regions$adm2${.emph YourCountry}${.emph",
+        "YourState}${.emph YourDistrict}`. First few values that invoked",
+        "the error are: "),
+  # start_date_validStr
+  "must be `YYYY-MM-DD`. First few invalid values are: ",
+  # start_date_isConvertible
+  paste("must have month or day values in the valid range. First few invalid",
+        "values are: "),
+  # start_date_GTE2000
+  "can't be before `2000-01-01`. First few invalid values are: ",
+  # start_date_LTEtoday
+  "can't be in the future. First few invalid values are: ",
+  # end_date_validStr
+  "must be `YYYY-MM-DD`. First few invalid values are: ",
+  # end_date_isConvertible
+  paste("must have month or day values in the valid range. First few invalid",
+        "values are: "),
+  # end_date_GTE2000
+  "can't be before `2000-01-01`. First few invalid values are: ",
+  # end_date_LTEtoday
+  "can't be in the future. First few invalid values are: ",
+  # end_date_GTEstart
+  "can't be before the start date. First few invalid values are: ",
+  # test_id_presetVal
+  paste("was not found. Use `{.pkg serotrackr}::assays${.emph",
+        "YourPathogen}${.emph YourTestID}`. Values that invoked the error",
+        "are: "),
+  # result_isNum
+  "must be a numeric column, not ",
+  # result_GTE0
+  "can't be negative. First few invalid values are: ",
+  # result_cat_presetVal
+  paste("must only be one of these values, ignoring case: `{.emph positive}`,",
+        "`{.emph borderline}`, or `{.emph negative}`. First few invalid values",
+        "are: ")
+
+)
+
+
+usethis::use_data(rules, internal = TRUE, overwrite = TRUE)
+
+
+
+# Testing -----------------------------------------------------------------
+
+# library(validate)
+# ls("package:validate")
+# map_cols(data, adm0, collection_start_date, collection_end_date, test_id,
+#          result, dataset_id = NULL, id = NULL, age_group = NULL, age = NULL,
+#          sex = NULL, adm1 = NULL, adm2 = NULL, result_cat = NULL,
+#          # test_cutoff = NULL,
+#          include_others = TRUE)
+
+# testdf <- tibble(
+#   dataset_id = 1,
+#   # id = 1:3,
+#   id = c(1, 1, 2),
+#   # age_group = c("0 - 10", "20-30", "30,40"),
+#   age_group = c("12-120", "12-8.5", NA),
+#   age = c(70, NA, 10),
+#   sex = c("f", "Male", "O"),
+#   adm0 = regions$adm0$Canada,
+#   # adm1 = regions$adm1$Canada$Alberta,
+#   adm1 = NA,
+#   adm2 = regions$adm2$Canada$Alberta$Calgary,
+#   state = c("Alberta", "bc", "Québec"),
+#   city = c("calgary", "Metro vancouver", "Montréal"),
+#   collection_start_date = c("2023-03-21", "2900-03-11", NA),
+#   collection_end_date = c("2023-04-01", "1900-04-01", NA),
+#   test_id = assays$`SARS-CoV-2`$`AESKU - IgG - SARS-CoV-2 NP IgG`,
+#   # result = c("'2.4'", "3.5", "9"),
+#   result = "9",
+#   # result_cat = rep("negative", times = 3)
+#   result_cat = c("negative", "positive", NA)
+# )
+
+# validate::confront(testdf, rules, raise="all") %>% summary() %>% select(-expression)
+# cf <- confront(testdf, rules)
+# values(cf)[[2]] %>% as.data.frame() %>% select(adm1_presetVal) %>% is.na()
+# values(cf, simplify = FALSE)$adm0
+
+# confront(testdf, rules[grep("age_group|V09|V10",names(rules))]) %>%
+#   summary() %>% select(-expression)
+
+# names(rules)
+# label(rules)
+# description(rules)
+# meta(rules)
+# length(rules)
+# variables(rules)
+# as.data.frame(rules) %>% View()
