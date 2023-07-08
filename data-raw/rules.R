@@ -1,9 +1,10 @@
 ## code to prepare (validation) `rules` goes here. It is an internal object.
 
 # Approximate runtime of these rules:
-## Dataset with 1,000 rows:   00.3 sec
-## Dataset with 10,000 rows:  01.9 sec
-## Dataset with 100,000 rows: 17.3 sec
+# Dataset with 1,000 rows:     00.13 sec
+# Dataset with 10,000 rows:    00.24 sec
+# Dataset with 100,000 rows:   01.60 sec
+# Dataset with 1,000,000 rows: 14.40 sec
 
 # Validation rules --------------------------------------------------------
 
@@ -64,14 +65,12 @@ rules <- validate::validator(
     dplyr::pull(dplyr::filter(regions_df, shapeType=="ADM2"), shapeID_v5),
 
   ## collection_start_date ---------------------------------------------------
-  start_date_isValidFrmt = sapply(
-    collection_start_date, function(x) {
-      ifelse(
-        !is.na(x),
-        ifelse(is.na(lubridate::parse_date_time2(x,c("dmY","Ymd"))),FALSE, TRUE),
-        NA
-      )
-    }
+  start_date_isValidFrmt = dplyr::if_else(
+    !is.na(collection_start_date),
+    dplyr::if_else(is.na(lubridate::parse_date_time2(collection_start_date,
+                                                     c("dmY","Ymd"))),
+                   FALSE, TRUE),
+    NA
   ) == TRUE,
 
   start_date_2000today =
@@ -81,14 +80,12 @@ rules <- validate::validator(
     Sys.Date(),
 
   ## collection_end_date -----------------------------------------------------
-  end_date_isValidFrmt = sapply(
-    collection_end_date, function(x) {
-      ifelse(
-        !is.na(x),
-        ifelse(is.na(lubridate::parse_date_time2(x,c("dmY","Ymd"))),FALSE, TRUE),
-        NA
-      )
-    }
+  end_date_isValidFrmt = dplyr::if_else(
+    !is.na(collection_end_date),
+    dplyr::if_else(is.na(lubridate::parse_date_time2(collection_end_date,
+                                                     c("dmY","Ymd"))),
+                   FALSE, TRUE),
+    NA
   ) == TRUE,
 
   end_date_2000today =
@@ -97,7 +94,7 @@ rules <- validate::validator(
     lubridate::parse_date_time2(collection_end_date, c("dmY", "Ymd")) <=
     Sys.Date(),
 
-  end_date_GTEstart = ifelse(
+  end_date_GTEstart = dplyr::if_else(
     (
       (lubridate::parse_date_time2(collection_start_date, c("dmY", "Ymd")) >=
          as.Date("2000-01-01") &
@@ -254,26 +251,28 @@ usethis::use_data(rules, internal = TRUE, overwrite = TRUE)
 #     state = rep(c("Alberta", "bc", "Québec"), times = t),
 #     city = rep(c("calgary", "Metro vancouver", "Montréal"), times = t),
 #     collection_start_date = rep(c("2009/03/11", NA, "2008-03-11"), times = t),
-#     collection_end_date = rep(c("2019-14-01", "2019-04-01", "2007-04-01"), times = t),
+#     collection_end_date=rep(c("2019-14-01", "2019-04-01", "2007-04-01"),times=t),
 #     test_id = assays$`SARS-CoV-2`$`AESKU - IgG - SARS-CoV-2 NP IgG`,
 #     result = "9",
 #     result_cat = rep(c("negative", "positive", NA), times = t)
 #   )
 # }
 #
-# testdf <- makedf(t = 33333)
+# testdf <- makedf(t = 1)
 #
 # start.time <- Sys.time()
 # summary(confront(testdf, rules, raise="all"))[1:7]
 # end.time <- Sys.time()
 # end.time - start.time
 #
-# # Dataset with 1,000 rows:   00.3 sec
-# # Dataset with 10,000 rows:  01.9 sec
-# # Dataset with 100,000 rows: 17.3 sec
+# # Dataset with 1,000 rows:     00.13 sec
+# # Dataset with 10,000 rows:    00.24 sec
+# # Dataset with 100,000 rows:   01.60 sec
+# # Dataset with 1,000,000 rows: 14.40 sec
 #
 #
-# # validate::confront(testdf, rules, raise="all") %>% summary() %>% select(-expression)
+# # validate::confront(testdf, rules, raise="all") %>% summary() %>%
+# #   select(-expression)
 # # cf <- confront(testdf, rules)
 # # values(cf)[[2]] %>% as.data.frame() %>% select(adm1_presetVal) %>% is.na()
 # # values(cf, simplify = FALSE)$adm0
