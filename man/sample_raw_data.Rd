@@ -6,18 +6,22 @@
 \title{Sample raw data}
 \format{
 \code{sample_raw_data}
-A data frame with 3 rows and 10 columns:
+A data frame with 100 rows and 14 columns:
 \describe{
 \item{dataset_id}{ID of each collection period}
 \item{id}{Anonimized ID of each participant or sample}
+\item{age_group}{Age group}
 \item{age}{Age}
 \item{sex}{Sex}
-\item{state}{Administative level 1 region names}
-\item{city}{Administative level 2 region names}
+\item{adm0}{Administative level 0 (country) region names}
+\item{adm1}{Administative level 1 (state/province) region names}
+\item{adm2}{Administative level 2 (district/municipalities) region names}
 \item{collection_start_date}{Collection start date}
 \item{collection_end_date}{Collection end date}
+\item{test_id}{Test ID}
 \item{result}{Test results}
 \item{result_cat}{Interpretation of test results; e.g. positive, negative, or borderline}
+\item{another_col}{Representing other columns that raw data might contain}
 }
 }
 \source{
