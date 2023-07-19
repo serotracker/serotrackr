@@ -1,5 +1,8 @@
 # serotrackr (development version)
 
+* `st_validate()` replaced `map_cols()`. Naming of functions will be more consistent, while trying to avoid namespace conflicts. The new function accepts both columns and single values, checks for required input types (character, numeric, or date), applies several validation `rules` for each argument, and generates descriptive messages in the console about what parts of data are okay and what parts have issues.
+* Added validation `rules` as an internal object. These rules will be used at several stages to check data.
+* Added website using `pkgdown`. 
 * Added a logo to the `README.md` file. It will be used in the pkgdown website too.
 
 # serotrackr 0.1.0

@@ -72,7 +72,7 @@ makedf <- function(n, adm0 = "Canada", adm1 = "Alberta",
   ## Tweak this section for specific tests -----------------------------------
 
   head_dataset_id <- rep(1, times = 3)
-  head_id <- c(1, 1, 2)
+  head_id <- c(1, 2, 3)
   head_age_group <- c("12-120", "12-8.5", NA)
   head_age <- c(6, NA, 23)
   head_sex <- c("m", "m", "o")
@@ -80,9 +80,9 @@ makedf <- function(n, adm0 = "Canada", adm1 = "Alberta",
   head_adm1 <- c("Alberta", "bc", "Québec")
   head_adm2 <- rep(regions$adm2$Canada$Alberta$Calgary, times = 3)
   head_start_date <- c("2009/03/11", NA, "2008-03-11")
-  head_end_date <- c("2019-14-01", "2019-04-01", "2007-04-01")
+  head_end_date <- c("2019-12-01", "2019-04-01", "2009-04-01")
   head_test_id <- assays$`SARS-CoV-2`$`AESKU - IgG - SARS-CoV-2 NP IgG`
-  head_result <- rep("9.25", times = 3)
+  head_result <- sample(0.01:199.99, size = 3)
   head_result_cat <- c("negative", "positive", NA)
 
   ## Random generation -------------------------------------------------------
@@ -128,7 +128,7 @@ makedf <- function(n, adm0 = "Canada", adm1 = "Alberta",
       ),
       n-length(head_test_id), replace = TRUE
     )
-    random_result <- sample(seq(-50, 400, by = 0.01), n-length(head_result),
+    random_result <- sample(seq(0, 400, by = 0.01), n-length(head_result),
                             replace = TRUE)
     random_result_cat <- sample(c("negative","borderline","positive","neg","pos"),
                                 n-length(head_result_cat), replace = TRUE)

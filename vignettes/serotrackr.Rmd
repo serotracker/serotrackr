@@ -12,6 +12,21 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+options(crayon.enabled = TRUE)
+ansi_aware_handler <- function(x, options) {
+  paste0(
+    "<pre class=\"r-output\"><code>",
+    fansi::sgr_to_html(x = x, warn = FALSE, term.cap = "256"),
+    "</code></pre>"
+  )
+}
+knitr::knit_hooks$set(
+  output = ansi_aware_handler, 
+  message = ansi_aware_handler, 
+  warning = ansi_aware_handler,
+  error = ansi_aware_handler
+)
 ```
 
 serotrackr helps you prepare your raw data for submission to [SeroTracker](https://serotracker.com){target="_blank"}. We will use a sample raw dataset included in the package to demonstrate the workflow of serotrackr:
@@ -20,61 +35,95 @@ serotrackr helps you prepare your raw data for submission to [SeroTracker](https
 library(serotrackr)
 library(dplyr)
 
-sample_raw_data
+head(sample_raw_data)
 ```
 
 
 Here are the steps you should follow:
 
-## 1) Map your coloumns
+## 1) Validate your data
 
-Among the columns in your raw data, specify those that SeroTracker requires using the `map_cols()` function:
+The first step is to use `st_validate()`. Here, you need to specify which columns in your data contains the data that is required for submission. Instead of unquoted column names, you can also provide a vector of length one for most of the arguments, which would be applied to all records in your data after validation.
 
-```{r}
-df <- map_cols(
+*Please note that the reason you see the output uncolored and in several pieces is the output of this function is styled and organized by the `cli` package specific to R console, where the expected use case of `serotrackr` happens. The ANSI escape codes `cli` uses are not fully supported by Rmarkdown.*
+
+```{r, error=TRUE}
+validated_df <- st_validate(
   sample_raw_data,
   dataset_id = dataset_id,
   id = id,
-  age_group = age,
-  sex = sex,
-  country = "Canada",
-  state = state,
-  city = city,
-  collection_start_date = collection_start_date,
-  collection_end_date = collection_end_date,
-  test_id = assays$`SARS-CoV-2`$`EUROIMMUN - IgG - Anti-SARS-CoV-2 ELISA IgG`,
+  age_group = "12-17",
+  sex = "m",
+  adm0 = regions$adm0$Canada,
+  adm1 = regions$adm1$Canada$Alberta,
+  adm2 = regions$adm2$Canada$Alberta$Calgary,
+  collection_start_date = "2023-01-01",
+  collection_end_date = "2022-02-01",
+  test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
   result = result,
   result_cat = result_cat,
-  include_others = FALSE
+  include_others = TRUE
 )
 ```
 
-## 2) Clean data
-
-The `clean()` function will apply required validations to your data:
+`st_validate()` produces a detailed report of any errors which need to be addressed before proceeding.
 
 ```{r}
-df_cleaned <- clean(df)
-df_cleaned
+new_raw_data <- sample_raw_data %>% 
+  mutate(
+    result_cat = case_when(
+      result_cat == "neg" ~ "negative",
+      result_cat == "pos" ~ "positive",
+      TRUE ~ result_cat
+    )
+  )
 ```
 
-## 3) Generate aggregate estimates
+We now rerun `st_validate()`:
+
+```{r}
+validated_df <- st_validate(
+  new_raw_data,
+  dataset_id = dataset_id,
+  id = id,
+  age_group = "12-17",
+  sex = "m",
+  adm0 = regions$adm0$Canada,
+  adm1 = regions$adm1$Canada$Alberta,
+  adm2 = regions$adm2$Canada$Alberta$Calgary,
+  collection_start_date = "2023-01-01",
+  collection_end_date = "2023-02-01",
+  test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
+  result = result,
+  result_cat = result_cat,
+  include_others = TRUE
+)
+```
+
+Hooray! Here is a glimps at the validated data:
+
+```{r}
+head(validated_df)
+```
+
+
+## 2) Generate aggregate estimates
 
 To be completed.
 
-## 4) Adjust the estimates
+## 3) Adjust the estimates
 
 To be completed.
 
-## 5) Calculate 95% CIs
+## 4) Calculate 95% CIs
 
 To be completed.
 
-## 6) Export to Excel for submission
+## 5) Export to Excel for submission
 The `save_xlsx()` function exports the clean data in an Excel format.
 
 ```{r}
-save_xlsx(df_cleaned, path = tempfile())
+# save_xlsx(df_cleaned, path = tempfile())
 ```
 
 Some fields, mostly metadata, in the exported document will still need to be filled in. The first sheet of the document has the necessary instructions. When you are done, the document is ready to be submitted on [SeroTracker.com](https://serotracker.com){target="_blank"}.

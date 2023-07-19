@@ -2,7 +2,8 @@
 #' Assays list
 #'
 #' @description
-#' A list of assays for different pathogens. This list can be used in the map_cols() function to select assays.
+#' A list of assays for different pathogens. This list can be used in the
+#' st_validate() function to select assays.
 #'
 #' @format `assays`
 #' A nested named list

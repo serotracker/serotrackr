@@ -6,12 +6,20 @@
 # Dataset with 100,000 rows:   01.60 sec
 # Dataset with 1,000,000 rows: 14.40 sec
 
+# TODO check if adm1 is a region within adm0. Same for adm2.
+# TODO For each test_id, check that min result of 'positive' result_cats is
+# larger than the max result of 'negative' (or 'borderline') result_cats.
+# TODO Check all assays are for one pathogen only
+# TODO adm0 columns must only contain one country code
+# TODO Add validation rules for date-type dates. It's just char-type dates rn.
+
+
 # Validation rules --------------------------------------------------------
 
 rules <- validate::validator(
 
   ## dataset_id --------------------------------------------------------------
-  dataset_id_isNum = is.numeric(dataset_id),
+  # dataset_id_isNum = is.numeric(dataset_id),
 
   ## id ----------------------------------------------------------------------
   id_isUnique = validate::is_unique(
@@ -40,12 +48,12 @@ rules <- validate::validator(
     validate::in_range(lower_age, 0, 120, strict = TRUE) == TRUE else NA,
 
   ## age ---------------------------------------------------------------------
-  age_isNum = is.numeric(age),
+  # age_isNum = is.numeric(age),
   age_notInf = !is.infinite(age),
   age_GTE0 = if(is.numeric(age) & !is.infinite(age)) age >= 0 else NA,
   age_LTE120 = if(is.numeric(age) & !is.infinite(age)) age <= 120 else NA,
-  age_GTElowerAge = age >= lower_age,
-  age_LTEupperAge = age <= upper_age,
+  age_GTElowerAge = if(is.numeric(age) & !is.infinite(age)) age>=lower_age else NA,
+  age_LTEupperAge = if(is.numeric(age) & !is.infinite(age)) age<=upper_age else NA,
 
   ## sex ---------------------------------------------------------------------
   sex_presetVal = if(!is.na(sex))
@@ -53,6 +61,8 @@ rules <- validate::validator(
           ignore.case = TRUE) else NA,
 
   ## adm0 --------------------------------------------------------------------
+  # adm0_singleVal = dplyr::if_else(!any(is.na(adm0)) & length(unique(adm0)) == 1,
+  #                                 TRUE, FALSE) == TRUE,
   adm0_presetVal = adm0 %in%
     dplyr::pull(dplyr::filter(regions_df, shapeType=="ADM0"), shapeID_v5),
 
@@ -116,7 +126,7 @@ rules <- validate::validator(
   test_id_presetVal = test_id %in% dplyr::pull(assays_df, test_id),
 
   ## result ------------------------------------------------------------------
-  result_isNum = is.numeric(result),
+  # result_isNum = is.numeric(result),
   result_GTE0 = if(is.numeric(result)) result >= 0 else NA,
 
   ## result_cat --------------------------------------------------------------
@@ -127,101 +137,91 @@ rules <- validate::validator(
 ) # validator() closes
 
 
-names(rules["V04"]) <- "lower_age"
-names(rules["V05"]) <- "upper_age"
+names(rules["V03"]) <- "lower_age"
+names(rules["V04"]) <- "upper_age"
 
 
 # Error messages ----------------------------------------------------------
 
 # Using the `description` metadata of the "validator" object to store the body
-# of error messages that, if invoked, the map_cols() will show. The header
+# of error messages that, if invoked, the st_validate() will show. The header
 # (argument name) of these error messages will be entered separately in the
 # my_progress().
 validate::description(rules) <- c(
   # dataset_id_isNum
-  "must be a numeric column, not ",
+  # "must be a numeric column, not ",
   # id_isUnique
   paste("is not unique. Some records have identical values for all these",
         "arguments: {.emph id}, {.emph collection_start_date},",
-        "{.emph collection_end_date}, {.emph test_id}, and {.emph result}.",
-        "First few are: "),
+        "{.emph collection_end_date}, {.emph test_id}, and {.emph result}."),
   # age_group_dashPlus
   paste("must have one of these two structures: `{.emph number-number}` or",
-        "`{.emph number+}`; e.g `18-64` or `65+`. First few values that",
-        "invoked the error are: "),
+        "`{.emph number+}`; e.g `18-64` or `65+`."),
   # lower_age
   NA,
   # upper_age
   NA,
   # age_group_upLTE120
-  paste("upper bound can't be larger than 120 years. First few invalid values",
-        "are: "),
+  paste("upper bound can't be larger than 120 years."),
   # age_group_lowLTEup
-  paste("lower bound can't be larger than its upper bound. First few invalid",
-        "values are: "),
+  paste("lower bound can't be larger than upper bound."),
   # age_group_plusInRange
   paste("must be between 0 and 120 not inclusive, when it has a `{.emph",
         "number+}` structure, like 65+."),
   # age_isNum
-  NA,
+  # NA,
   # age_notInf
-  NA,
+  "can't be infinite.",
   # age_GTE0
-  "can't be negative. First few invalid values are: ",
+  "can't be negative.",
   # age_LTE120
-  "can't be larger than 120 years. First few invalid values are: ",
+  "can't be larger than 120 years.",
   # age_GTElowerAge
   paste("can't be less than the lower bound of its corresponding `age_group`",
-        "value. First few inavlid values are: "),
+        "value."),
   # age_LTEupperAge
   paste("can't be greater than the upper bound of its corresponding `age_group`",
-        "value. First few inavlid values are: "),
+        "value."),
   # sex_presetVal
   paste("must only be one of these values, ignoring case: `{.emph f}`,",
         "`{.emph m}`, `{.emph o}`, `{.emph female}`, `{.emph male}`, or",
-        "`{.emph other}`. First few invalid values are: "),
+        "`{.emph other}`."),
+  # adm0_singleVal
+  # "can't be more than one value.",
   # adm0_presetVal
   paste("code was not found. Use `{.pkg serotrackr}::regions$adm0${.emph",
-        "YourCountry}`. First few values that invoked the error are: "),
+        "YourCountry}`."),
   # adm1_presetVal
   paste("codes were not found. Use `{.pkg serotrackr}::",
-        "regions$adm1${.emph YourCountry}${.emph YourState}`. First few",
-        "values that invoked the error are: "),
+        "regions$adm1${.emph YourCountry}${.emph YourState}`."),
   # adm2_presetVal
   paste("codes were not found. Use",
         "`{.pkg serotrackr}::regions$adm2${.emph YourCountry}${.emph",
-        "YourState}${.emph YourDistrict}`. First few values that invoked",
-        "the error are: "),
+        "YourState}${.emph YourDistrict}`."),
   # start_date_isValidFrmt
   paste("must be `{.emph yyyy-mm-dd}` or `{.emph dd-mm-yyyy}`. Instead of dash,",
         "any arbitrary non-digit separator or blank space are also acceptable.",
-        "{.emph mm} can also be abbreviated or full months names. First few",
-        "invalid values are: "),
+        "{.emph mm} can also be abbreviated or full months names."),
   # start_date_2000today
-  paste("can't be before `2000-01-01` or in the future. First few invalid",
-        "values are: "),
+  paste("can't be before `2000-01-01` or in the future."),
   # end_date_isValidFrmt
   paste("must be `{.emph yyyy-mm-dd}` or `{.emph dd-mm-yyyy}`. Instead of dash,",
         "any arbitrary non-digit separator or blank space are also acceptable.",
-        "{.emph mm} can also be abbreviated or full months names. First few",
-        "invalid values are: "),
+        "{.emph mm} can also be abbreviated or full months names."),
   # end_date_2000today
-  paste("can't be before `2000-01-01` or in the future. First few invalid",
-        "values are: "),
+  paste("can't be before `2000-01-01` or in the future."),
   # end_date_GTEstart
-  "can't be before the start date. First few invalid values are: ",
+  "can't be before the start date.",
   # test_id_presetVal
   paste("was not found. Use `{.pkg serotrackr}::assays${.emph",
-        "YourPathogen}${.emph YourTestID}`. Values that invoked the error",
-        "are: "),
+        "YourPathogen}${.emph YourTestID}`."),
   # result_isNum
-  "must be a numeric column, not ",
+  # "must be a numeric column, not ",
   # result_GTE0
-  "can't be negative. First few invalid values are: ",
+  "can't be negative.",
   # result_cat_presetVal
   paste("must only be one of these values, ignoring case: `{.emph positive}`,",
-        "`{.emph borderline}`, or `{.emph negative}`. First few invalid values",
-        "are: ")
+        "`{.emph borderline}`, or `{.emph negative}`.")
 
 )
 
@@ -287,3 +287,4 @@ usethis::use_data(rules, internal = TRUE, overwrite = TRUE)
 # # length(rules)
 # # variables(rules)
 # # View(validate::as.data.frame(rules))
+

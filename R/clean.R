@@ -37,27 +37,27 @@
 #'
 #' clean(mapped_cols)
 
-clean <- function(data) {
-  stopifnot("Data must be of class 'data.frame'" = "data.frame" %in% class(data))
-  # if(is.null({{id}})) {data <- data %>% mutate(id = row_number())}
-
-  data <- data %>%
-    dplyr::mutate(
-      age_min = stringr::str_extract(age_group, "\\d+"),
-      age_max = stringr::str_extract(age_group, "(\\d+)(?!.*\\d)"),
-      age_group = paste0(age_min, "-", age_max),
-      sex = dplyr::case_when(
-        grepl("f|female|woman|women", sex, ignore.case = TRUE) ~ "female",
-        grepl("m|male|man|men", sex, ignore.case = TRUE) ~ "male",
-        grepl("^na$|^n/a$", sex, ignore.case = TRUE) | is.na(sex) ~ NA,
-        TRUE ~ "other"
-      ),
-      dplyr::across(dplyr::ends_with("date"), ~ as.Date(.)),
-      result = as.numeric(stringr::str_extract(result, "\\d+\\.*\\d*"))
-    ) %>%
-    dplyr::select(dataset_id, id, age_group, sex, country, state, county,
-                  city, collection_start_date, collection_end_date, test_id,
-                  result, result_cat)
-
-  return(data)
-}
+# clean <- function(data) {
+#   stopifnot("Data must be of class 'data.frame'" = "data.frame" %in% class(data))
+#   # if(is.null({{id}})) {data <- data %>% mutate(id = row_number())}
+#
+#   data <- data %>%
+#     dplyr::mutate(
+#       age_min = stringr::str_extract(age_group, "\\d+"),
+#       age_max = stringr::str_extract(age_group, "(\\d+)(?!.*\\d)"),
+#       age_group = paste0(age_min, "-", age_max),
+#       sex = dplyr::case_when(
+#         grepl("f|female|woman|women", sex, ignore.case = TRUE) ~ "female",
+#         grepl("m|male|man|men", sex, ignore.case = TRUE) ~ "male",
+#         grepl("^na$|^n/a$", sex, ignore.case = TRUE) | is.na(sex) ~ NA,
+#         TRUE ~ "other"
+#       ),
+#       dplyr::across(dplyr::ends_with("date"), ~ as.Date(.)),
+#       result = as.numeric(stringr::str_extract(result, "\\d+\\.*\\d*"))
+#     ) %>%
+#     dplyr::select(dataset_id, id, age_group, sex, country, state, county,
+#                   city, collection_start_date, collection_end_date, test_id,
+#                   result, result_cat)
+#
+#   return(data)
+# }
