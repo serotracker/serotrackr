@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">serotrackr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>data</dt>
-<dd><p>a cleaned data.frame, output of map_cols()</p></dd>
+<dd><p>a validated data.frame, output of st_validate()</p></dd>
 
 
 <dt>path</dt>
@@ -70,35 +70,54 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ycphs.github.io/openxlsx/index.html" class="external-link">openxlsx</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">df_orig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>dataset_id <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                      id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span></span>
-<span class="r-in"><span>                      age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0 - 10"</span>, <span class="st">"20-30"</span>, <span class="st">"30,40"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                      sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"f"</span>, <span class="st">"Male"</span>, <span class="st">"binary"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                      collection_start_date <span class="op">=</span> <span class="st">"2020-03-01"</span>,</span></span>
-<span class="r-in"><span>                      collection_end_date <span class="op">=</span> <span class="st">"2020-04-01"</span>,</span></span>
-<span class="r-in"><span>                      result <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"'2.4'"</span>, <span class="st">"3.5"</span>, <span class="st">"9"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                      result_cat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"negative"</span>, times <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">df_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="map_cols.html">map_cols</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">df_orig</span>,</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">validated_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="st_validate.html">st_validate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">sample_raw_data</span>,</span></span>
 <span class="r-in"><span>  dataset_id <span class="op">=</span> <span class="va">dataset_id</span>,</span></span>
 <span class="r-in"><span>  id <span class="op">=</span> <span class="va">id</span>,</span></span>
-<span class="r-in"><span>  age_group <span class="op">=</span> <span class="va">age</span>,</span></span>
-<span class="r-in"><span>  sex <span class="op">=</span> <span class="va">sex</span>,</span></span>
-<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"Earth!"</span>,</span></span>
-<span class="r-in"><span>  collection_start_date <span class="op">=</span> <span class="va">collection_start_date</span>,</span></span>
-<span class="r-in"><span>  collection_end_date <span class="op">=</span> <span class="va">collection_end_date</span>,</span></span>
-<span class="r-in"><span>  test_id <span class="op">=</span> <span class="va">assays</span><span class="op">$</span><span class="va">`SARS-CoV-2`</span><span class="op">$</span><span class="va">`EUROIMMUN - IgG - Anti-SARS-CoV-2 ELISA IgG`</span>,</span></span>
+<span class="r-in"><span>  age_group <span class="op">=</span> <span class="st">"12-17"</span>,</span></span>
+<span class="r-in"><span>  sex <span class="op">=</span> <span class="st">"m"</span>,</span></span>
+<span class="r-in"><span>  adm0 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm0</span><span class="op">$</span><span class="va">Canada</span>,</span></span>
+<span class="r-in"><span>  adm1 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm1</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span>,</span></span>
+<span class="r-in"><span>  adm2 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm2</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span><span class="op">$</span><span class="va">Calgary</span>,</span></span>
+<span class="r-in"><span>  collection_start_date <span class="op">=</span> <span class="st">"2023-01-01"</span>,</span></span>
+<span class="r-in"><span>  collection_end_date <span class="op">=</span> <span class="st">"2023-02-01"</span>,</span></span>
+<span class="r-in"><span>  test_id <span class="op">=</span> <span class="va">assays</span><span class="op">$</span><span class="va">`SARS-CoV-2`</span><span class="op">$</span><span class="va">`AAZ LMB - IgG, IgM - COVID-PRESTO®`</span>,</span></span>
 <span class="r-in"><span>  result <span class="op">=</span> <span class="va">result</span>,</span></span>
-<span class="r-in"><span>  result_cat <span class="op">=</span> <span class="va">result_cat</span>,</span></span>
-<span class="r-in"><span>  include_others <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="clean.html">clean</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  result_cat <span class="op">=</span> <span class="st">"negative"</span>,</span></span>
+<span class="r-in"><span>  include_others <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Mapping columns and validating data</span> <span style="color: #00BBBB;">─────────────────────────────────────────</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> age_group ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">age_group</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [396ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> sex ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">sex</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [78ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm0 ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm0</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [86ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm1 ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm1</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [8ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm2 ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm2</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [12ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> collection_start_date ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_start_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [152ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> collection_end_date ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_end_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [18ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> test_id ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">test_id</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [7ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> result ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [12ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> result_cat ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result_cat</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [15ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> dataset_id ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">dataset_id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [3ms]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> id ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [10ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Validation finished</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Success!</span> Validated data created.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">save_xlsx</span><span class="op">(</span><span class="va">df_out</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">save_xlsx</span><span class="op">(</span><span class="va">validated_df</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -107,7 +126,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Placeholder.</p>
+  <p></p><p>Developed by Reza Hosseini, SeroTracker.</p>
 </div>
 
 <div class="pkgdown-footer-right">

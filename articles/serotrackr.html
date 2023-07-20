@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">serotrackr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,77 +84,178 @@ workflow of serotrackr:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://serotracker.github.io/serotrackr/">serotrackr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sample_raw_data</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 10</span></span></span>
-<span><span class="co">#&gt;   dataset_id    id age    sex    state   city            collection_start_date</span></span>
-<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>          1     1 0 - 10 f      Alberta calgary         2020-03-01           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>          1     2 20-30  Male   bc      Metro vancouver 2020-03-01           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>          1     3 30,40  binary Québec  Montréal        2020-03-01           </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: collection_end_date &lt;chr&gt;, result &lt;chr&gt;, result_cat &lt;chr&gt;</span></span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sample_raw_data</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 14</span></span></span>
+<span><span class="co">#&gt;   dataset_id    id age_group   age sex   adm0  adm1  adm2  collection_start_date</span></span>
+<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>          1     1 12-120        6 m     Cana… Albe… 7649… 2009/03/11           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>          1     2 12-8.5       <span style="color: #BB0000;">NA</span> m     Cana… bc    7649… <span style="color: #BB0000;">NA</span>                   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>          1     3 <span style="color: #BB0000;">NA</span>           23 o     Cana… Québ… 7649… 2008-03-11           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>          1    28 0-10          4 other Cana… Albe… Camr… 2006/Jul.9           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>          2    33 20-30        22 f     Cana… Albe… Calg… 2021|May|33          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>          2    65 110+        119 male  Cana… Albe… Banf… 11/January.2006      </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: collection_end_date &lt;chr&gt;, test_id &lt;chr&gt;, result &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   result_cat &lt;chr&gt;, another_col &lt;chr&gt;</span></span></span></code></pre>
 <p>Here are the steps you should follow:</p>
 <div class="section level2">
-<h2 id="map-your-coloumns">1) Map your coloumns<a class="anchor" aria-label="anchor" href="#map-your-coloumns"></a>
+<h2 id="validate-your-data">1) Validate your data<a class="anchor" aria-label="anchor" href="#validate-your-data"></a>
 </h2>
-<p>Among the columns in your raw data, specify those that SeroTracker
-requires using the <code><a href="../reference/map_cols.html">map_cols()</a></code> function:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/map_cols.html">map_cols</a></span><span class="op">(</span></span>
+<p>The first step is to use <code><a href="../reference/st_validate.html">st_validate()</a></code>. Here, you need
+to specify which columns in your data contains the data that is required
+for submission. Instead of unquoted column names, you can also provide a
+vector of length one for most of the arguments, which would be applied
+to all records in your data after validation.</p>
+<p><em>Please note that the reason you see the output uncolored and in
+several pieces is the output of this function is styled and organized by
+the <code>cli</code> package specific to R console, where the expected
+use case of <code>serotrackr</code> happens. The ANSI escape codes
+<code>cli</code> uses are not fully supported by Rmarkdown.</em></p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">validated_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/st_validate.html">st_validate</a></span><span class="op">(</span></span>
 <span>  <span class="va">sample_raw_data</span>,</span>
 <span>  dataset_id <span class="op">=</span> <span class="va">dataset_id</span>,</span>
 <span>  id <span class="op">=</span> <span class="va">id</span>,</span>
-<span>  age_group <span class="op">=</span> <span class="va">age</span>,</span>
-<span>  sex <span class="op">=</span> <span class="va">sex</span>,</span>
-<span>  country <span class="op">=</span> <span class="st">"Canada"</span>,</span>
-<span>  state <span class="op">=</span> <span class="va">state</span>,</span>
-<span>  city <span class="op">=</span> <span class="va">city</span>,</span>
-<span>  collection_start_date <span class="op">=</span> <span class="va">collection_start_date</span>,</span>
-<span>  collection_end_date <span class="op">=</span> <span class="va">collection_end_date</span>,</span>
-<span>  test_id <span class="op">=</span> <span class="va">assays</span><span class="op">$</span><span class="va">`SARS-CoV-2`</span><span class="op">$</span><span class="va">`EUROIMMUN - IgG - Anti-SARS-CoV-2 ELISA IgG`</span>,</span>
+<span>  age_group <span class="op">=</span> <span class="st">"12-17"</span>,</span>
+<span>  sex <span class="op">=</span> <span class="st">"m"</span>,</span>
+<span>  adm0 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm0</span><span class="op">$</span><span class="va">Canada</span>,</span>
+<span>  adm1 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm1</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span>,</span>
+<span>  adm2 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm2</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span><span class="op">$</span><span class="va">Calgary</span>,</span>
+<span>  collection_start_date <span class="op">=</span> <span class="st">"2023-01-01"</span>,</span>
+<span>  collection_end_date <span class="op">=</span> <span class="st">"2022-02-01"</span>,</span>
+<span>  test_id <span class="op">=</span> <span class="va">assays</span><span class="op">$</span><span class="va">`SARS-CoV-2`</span><span class="op">$</span><span class="va">`AAZ LMB - IgG, IgM - COVID-PRESTO®`</span>,</span>
 <span>  result <span class="op">=</span> <span class="va">result</span>,</span>
 <span>  result_cat <span class="op">=</span> <span class="va">result_cat</span>,</span>
-<span>  include_others <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  include_others <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Mapping columns and validating data</span> <span style="color: #00BBBB;">─────────────────────────────────────────</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> age_group ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">age_group</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [281ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> sex ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">sex</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [16ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> adm0 ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm0</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [115ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> adm1 ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm1</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [8ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> adm2 ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm2</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [50ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> collection_start_date ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_start_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [232ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> collection_end_date ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> <span style="background-color: #BB0000;">collection_end_date</span> can't be before the start date.<span style="color: #00BBBB;"> [41ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> test_id ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">test_id</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [8ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> result ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [23ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> result_cat ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> <span style="background-color: #BB0000;">result_cat</span> must only be one of these values, ignoring case: `<span style="font-style: italic;">positive</span>`,</span></span>
+<span><span class="co">#&gt;   `<span style="font-style: italic;">borderline</span>`, or `<span style="font-style: italic;">negative</span>`. <span style="color: #0000BB;">46</span> records have this issue. Invalid values are</span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">"neg"</span> and <span style="color: #0000BB;">"pos"</span>.<span style="color: #00BBBB;"> [25ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> dataset_id ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">dataset_id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [3ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> id ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> <span style="background-color: #BB0000;">id</span> will be evaluated when `<span style="font-style: italic;">collection_start_date</span>`, `<span style="font-style: italic;">collection_end_date</span>`,</span></span>
+<span><span class="co">#&gt;   `<span style="font-style: italic;">test_id</span>`, and `<span style="font-style: italic;">result</span>` arguments are error-free.<span style="color: #00BBBB;"> [3ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; </span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Validation finished</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `st_validate()`:</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BB0000;">3 errors!</span> Please address them first. Validated data not created.</span></span></code></pre>
+<p><code><a href="../reference/st_validate.html">st_validate()</a></code> produces a detailed report of any errors
+which need to be addressed before proceeding.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">new_raw_data</span> <span class="op">&lt;-</span> <span class="va">sample_raw_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    result_cat <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>      <span class="va">result_cat</span> <span class="op">==</span> <span class="st">"neg"</span> <span class="op">~</span> <span class="st">"negative"</span>,</span>
+<span>      <span class="va">result_cat</span> <span class="op">==</span> <span class="st">"pos"</span> <span class="op">~</span> <span class="st">"positive"</span>,</span>
+<span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="va">result_cat</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>We now rerun <code><a href="../reference/st_validate.html">st_validate()</a></code>:</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">validated_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/st_validate.html">st_validate</a></span><span class="op">(</span></span>
+<span>  <span class="va">new_raw_data</span>,</span>
+<span>  dataset_id <span class="op">=</span> <span class="va">dataset_id</span>,</span>
+<span>  id <span class="op">=</span> <span class="va">id</span>,</span>
+<span>  age_group <span class="op">=</span> <span class="st">"12-17"</span>,</span>
+<span>  sex <span class="op">=</span> <span class="st">"m"</span>,</span>
+<span>  adm0 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm0</span><span class="op">$</span><span class="va">Canada</span>,</span>
+<span>  adm1 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm1</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span>,</span>
+<span>  adm2 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm2</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span><span class="op">$</span><span class="va">Calgary</span>,</span>
+<span>  collection_start_date <span class="op">=</span> <span class="st">"2023-01-01"</span>,</span>
+<span>  collection_end_date <span class="op">=</span> <span class="st">"2023-02-01"</span>,</span>
+<span>  test_id <span class="op">=</span> <span class="va">assays</span><span class="op">$</span><span class="va">`SARS-CoV-2`</span><span class="op">$</span><span class="va">`AAZ LMB - IgG, IgM - COVID-PRESTO®`</span>,</span>
+<span>  result <span class="op">=</span> <span class="va">result</span>,</span>
+<span>  result_cat <span class="op">=</span> <span class="va">result_cat</span>,</span>
+<span>  include_others <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Mapping columns and validating data</span> <span style="color: #00BBBB;">─────────────────────────────────────────</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> age_group ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">age_group</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [24ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> sex ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">sex</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [8ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> adm0 ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm0</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [7ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> adm1 ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm1</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [8ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> adm2 ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm2</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [12ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> collection_start_date ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_start_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [9ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> collection_end_date ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_end_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [15ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> test_id ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">test_id</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [5ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> result ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [8ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> result_cat ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result_cat</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [8ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> dataset_id ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">dataset_id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [3ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #BBBB00;">ℹ</span> id ...</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [10ms]</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; </span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Validation finished</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────</span></span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">Success!</span> Validated data created.</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; </span></span></code></pre>
+<p>Hooray! Here is a glimps at the validated data:</p>
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">validated_df</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 12</span></span></span>
+<span><span class="co">#&gt;   dataset_id    id age_group sex   adm1              adm2  collection_start_date</span></span>
+<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>          1     1 12-17     Male  4576071B96817999… 7649… 2023-01-01           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>          1     2 12-17     Male  4576071B96817999… 7649… 2023-01-01           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>          1     3 12-17     Male  4576071B96817999… 7649… 2023-01-01           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>          1    28 12-17     Male  4576071B96817999… 7649… 2023-01-01           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>          2    33 12-17     Male  4576071B96817999… 7649… 2023-01-01           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>          2    65 12-17     Male  4576071B96817999… 7649… 2023-01-01           </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: collection_end_date &lt;date&gt;, test_id &lt;chr&gt;, result &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   result_cat &lt;chr&gt;, another_col &lt;chr&gt;</span></span></span></code></pre>
 </div>
 <div class="section level2">
-<h2 id="clean-data">2) Clean data<a class="anchor" aria-label="anchor" href="#clean-data"></a>
-</h2>
-<p>The <code><a href="../reference/clean.html">clean()</a></code> function will apply required validations to
-your data:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_cleaned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean.html">clean</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
-<span><span class="va">df_cleaned</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 13</span></span></span>
-<span><span class="co">#&gt;   dataset_id    id age_group sex    country state   county city           </span></span>
-<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>          1     1 0-10      female Canada  Alberta <span style="color: #BB0000;">NA</span>     calgary        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>          1     2 20-30     male   Canada  bc      <span style="color: #BB0000;">NA</span>     Metro vancouver</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>          1     3 30-40     other  Canada  Québec  <span style="color: #BB0000;">NA</span>     Montréal       </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: collection_start_date &lt;date&gt;, collection_end_date &lt;date&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   test_id &lt;chr&gt;, result &lt;dbl&gt;, result_cat &lt;chr&gt;</span></span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="generate-aggregate-estimates">3) Generate aggregate estimates<a class="anchor" aria-label="anchor" href="#generate-aggregate-estimates"></a>
+<h2 id="generate-aggregate-estimates">2) Generate aggregate estimates<a class="anchor" aria-label="anchor" href="#generate-aggregate-estimates"></a>
 </h2>
 <p>To be completed.</p>
 </div>
 <div class="section level2">
-<h2 id="adjust-the-estimates">4) Adjust the estimates<a class="anchor" aria-label="anchor" href="#adjust-the-estimates"></a>
+<h2 id="adjust-the-estimates">3) Adjust the estimates<a class="anchor" aria-label="anchor" href="#adjust-the-estimates"></a>
 </h2>
 <p>To be completed.</p>
 </div>
 <div class="section level2">
-<h2 id="calculate-95-cis">5) Calculate 95% CIs<a class="anchor" aria-label="anchor" href="#calculate-95-cis"></a>
+<h2 id="calculate-95-cis">4) Calculate 95% CIs<a class="anchor" aria-label="anchor" href="#calculate-95-cis"></a>
 </h2>
 <p>To be completed.</p>
 </div>
 <div class="section level2">
-<h2 id="export-to-excel-for-submission">6) Export to Excel for submission<a class="anchor" aria-label="anchor" href="#export-to-excel-for-submission"></a>
+<h2 id="export-to-excel-for-submission">5) Export to Excel for submission<a class="anchor" aria-label="anchor" href="#export-to-excel-for-submission"></a>
 </h2>
 <p>The <code><a href="../reference/save_xlsx.html">save_xlsx()</a></code> function exports the clean data in an
 Excel format.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_xlsx.html">save_xlsx</a></span><span class="op">(</span><span class="va">df_cleaned</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># save_xlsx(df_cleaned, path = tempfile())</span></span></code></pre></div>
 <p>Some fields, mostly metadata, in the exported document will still
 need to be filled in. The first sheet of the document has the necessary
 instructions. When you are done, the document is ready to be submitted
@@ -168,7 +269,7 @@ on <a href="https://serotracker.com" target="_blank" class="external-link">SeroT
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Placeholder.</p>
+<p>Developed by Reza Hosseini, SeroTracker.</p>
 </div>
 
 <div class="pkgdown-footer-right">

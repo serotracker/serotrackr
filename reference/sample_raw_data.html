@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">serotrackr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,11 +54,14 @@
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
     <p><code>sample_raw_data</code>
-A data frame with 3 rows and 10 columns:</p><dl><dt>dataset_id</dt>
+A data frame with 100 rows and 14 columns:</p><dl><dt>dataset_id</dt>
 <dd><p>ID of each collection period</p></dd>
 
 <dt>id</dt>
 <dd><p>Anonimized ID of each participant or sample</p></dd>
+
+<dt>age_group</dt>
+<dd><p>Age group</p></dd>
 
 <dt>age</dt>
 <dd><p>Age</p></dd>
@@ -66,11 +69,14 @@ A data frame with 3 rows and 10 columns:</p><dl><dt>dataset_id</dt>
 <dt>sex</dt>
 <dd><p>Sex</p></dd>
 
-<dt>state</dt>
-<dd><p>Administative level 1 region names</p></dd>
+<dt>adm0</dt>
+<dd><p>Administative level 0 (country) region names</p></dd>
 
-<dt>city</dt>
-<dd><p>Administative level 2 region names</p></dd>
+<dt>adm1</dt>
+<dd><p>Administative level 1 (state/province) region names</p></dd>
+
+<dt>adm2</dt>
+<dd><p>Administative level 2 (district/municipalities) region names</p></dd>
 
 <dt>collection_start_date</dt>
 <dd><p>Collection start date</p></dd>
@@ -78,11 +84,17 @@ A data frame with 3 rows and 10 columns:</p><dl><dt>dataset_id</dt>
 <dt>collection_end_date</dt>
 <dd><p>Collection end date</p></dd>
 
+<dt>test_id</dt>
+<dd><p>Test ID</p></dd>
+
 <dt>result</dt>
 <dd><p>Test results</p></dd>
 
 <dt>result_cat</dt>
 <dd><p>Interpretation of test results; e.g. positive, negative, or borderline</p></dd>
+
+<dt>another_col</dt>
+<dd><p>Representing other columns that raw data might contain</p></dd>
 
 
 </dl></div>
@@ -96,7 +108,7 @@ A data frame with 3 rows and 10 columns:</p><dl><dt>dataset_id</dt>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Placeholder.</p>
+  <p></p><p>Developed by Reza Hosseini, SeroTracker.</p>
 </div>
 
 <div class="pkgdown-footer-right">
