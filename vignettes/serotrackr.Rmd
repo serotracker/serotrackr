@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r set_options, include = FALSE}
 knitr::opts_chunk$set(
   # collapse = TRUE
   comment = "#>"
@@ -32,7 +32,7 @@ The first step is to use `st_validate()`. Here, you need to specify which column
 
 *Please note that the reason you see the output uncolored and in several pieces is the output of this function is styled and organized by the `cli` package specific to R console, where the expected use case of `serotrackr` happens. The ANSI escape codes `cli` uses are not fully supported by Rmarkdown.*
 
-```{r, error=TRUE}
+```{r st_validate_error, error=TRUE}
 validated_df <- st_validate(
   sample_raw_data,
   dataset_id = dataset_id,
@@ -53,7 +53,7 @@ validated_df <- st_validate(
 
 `st_validate()` produces a detailed report of any errors which need to be addressed before proceeding.
 
-```{r}
+```{r address_issues}
 new_raw_data <- sample_raw_data %>%
   mutate(
     result_cat = case_when(
@@ -66,7 +66,7 @@ new_raw_data <- sample_raw_data %>%
 
 We now rerun `st_validate()`:
 
-```{r}
+```{r st_validate_success}
 validated_df <- st_validate(
   new_raw_data,
   dataset_id = dataset_id,
@@ -87,7 +87,7 @@ validated_df <- st_validate(
 
 Hooray! Here is a glimps at the validated data:
 
-```{r}
+```{r print_output}
 head(validated_df)
 ```
 
