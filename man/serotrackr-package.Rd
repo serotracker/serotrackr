@@ -15,4 +15,13 @@ Useful links:
 }
 
 }
+\author{
+\strong{Maintainer}: Reza Hosseini \email{rezahs@alum.ubc.ca} (\href{https://orcid.org/0000-0002-2390-4884}{ORCID})
+
+Other contributors:
+\itemize{
+  \item SeroTracker [copyright holder, funder]
+}
+
+}
 \keyword{internal}

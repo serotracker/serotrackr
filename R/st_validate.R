@@ -2,6 +2,7 @@
 #'
 #' @title Validate individual level data
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Locates the required and optional columns in your data and validates them.
 #' @param data a data.frame.
 #' @param dataset_id An unquoted column name or a length-one vector that
@@ -181,9 +182,12 @@ st_validate <- function(data,
 
   ### age ---------------------------------------------------------------------
 
-  msg_progress("age")
-  timestamp <- Sys.time()
-  err_age_n <- -1
+  if (!is.null(substitute(age))) {
+    msg_progress("age")
+    timestamp <- Sys.time()
+    err_age_n <- -1
+  }
+
 
   if (is.name(substitute(age))) {
     col_name <- deparse(substitute(age))
@@ -243,9 +247,9 @@ st_validate <- function(data,
       }
     }
   }
-  else if (is.null(substitute(age))) {
-    cat('\r')  # Clears the previous (progress) message in console
-  }
+  # else if (is.null(substitute(age))) {
+  #   cat('\r')  # Clears the previous (progress) message in console
+  # }
 
 
   ### sex ---------------------------------------------------------------------

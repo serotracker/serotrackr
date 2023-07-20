@@ -68,6 +68,7 @@ values are: \code{f}, \code{m}, \code{o}, \code{female}, \code{male}, or \code{o
 A validated data.frame
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Locates the required and optional columns in your data and validates them.
 }
 \examples{
