@@ -43,7 +43,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="serotrackr-development-version">serotrackr (development version)<a class="anchor" aria-label="anchor" href="#serotrackr-development-version"></a></h2>
-<ul><li>
+<ul><li>Added initial version of <code><a href="../reference/st_aggregate.html">st_aggregate()</a></code> to generate aggregate estimates from validated individual level data.</li>
+<li>
 <code><a href="../reference/st_validate.html">st_validate()</a></code> replaced <code>map_cols()</code>. Naming of functions will be more consistent, while trying to avoid namespace conflicts. The new function accepts both columns and single values, checks for required input types (character, numeric, or date), applies several validation <code>rules</code> for each argument, and generates descriptive messages in the console about what parts of data are okay and what parts have issues.</li>
 <li>Added validation <code>rules</code> as an internal object. These rules will be used at several stages to check data.</li>
 <li>Added website using <code>pkgdown</code>.</li>
@@ -65,7 +66,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Reza Hosseini, SeroTracker.</p>
+  <p></p><p>Developed by Team Member, SeroTracker.</p>
 </div>
 
 <div class="pkgdown-footer-right">
