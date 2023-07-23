@@ -16,7 +16,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Reza Hosseini \email{rezahs@alum.ubc.ca} (\href{https://orcid.org/0000-0002-2390-4884}{ORCID})
+\strong{Maintainer}: Team Member \email{email@example.ca} (\href{https://orcid.org/0000-0000-0000-0000}{ORCID})
 
 Other contributors:
 \itemize{

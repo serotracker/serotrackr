@@ -9,12 +9,9 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of serotrackr is to facilitate submissions on SeroTracker 2.0
-website.
+## Goal
 
-Access the package website and vignettes
-[here](https://serotracker.github.io/serotrackr/). They will be updated
-as new features are added.
+***serotrackr*** facilitates submissions on the SeroTracker 2.0 website.
 
 ## Installation
 
@@ -23,5 +20,10 @@ You can install the development version of serotrackr like so:
 ``` r
 devtools::install_github("serotracker/serotrackr")
 ```
+
+## Get started
+
+[This](https://serotracker.github.io/serotrackr/articles/serotrackr.html)
+vignette guides you through the best practices of using *serotrackr*.
 
 PS: The logo is subject to change.
