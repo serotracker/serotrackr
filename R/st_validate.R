@@ -11,7 +11,7 @@
 #'  used to generate aggregate estimates.
 #' @param adm0,adm1,adm2 a string or an unquoted name of a character column that
 #'  contains the country (adm0), state/province (adm1), or district/municipality
-#'  (adm2) codes. Use serotrackr::regions to select these. Only one adm0 is
+#'  (adm2) codes. Use `serotrackr::regions` to select these. Only one adm0 is
 #'  acceptable. adm1 and adm2 can be more.
 #' @param collection_start_date,collection_end_date Unquoted name of a date or
 #'  character column or a date or string scalar (vector of length one) for
@@ -20,7 +20,7 @@
 #'  It recognize arbitrary non-digit separators as well as no separator. Month
 #'  Can be entered as a digit or a full or abbreviated name.
 #' @param test_id a string or an unquoted name of a character column that
-#' contains the test IDs. Use serotrackr::assays to select these.
+#' contains the test IDs. Use `serotrackr::assays` to select these.
 #' @param result Unquoted name of a numeric column containing test results.
 #' @param result_cat Unquoted name of a character column with values of
 #'  `positive`, `borderline`, or `negative`, ignoring case. A single string

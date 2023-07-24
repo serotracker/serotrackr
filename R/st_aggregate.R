@@ -5,13 +5,15 @@
 # TODO fix case insensitivity for result_cat in st_validate()
 # TODO drop_na for `result` should be separated and done at a later stage
 # FIXME Should ab_titer_unit remain an optional field?
+# FIXME when there's only one age_group/sex, st_aggregate should not generate
+# age_group/sex subgroups.
 
 
 #' Aggregate data
 #' @description
 #' `r lifecycle::badge("experimental")`
 #' Generate aggregate estimates based on validated individual level data.
-#' @param data A validated data.frame that is the output of st_validate()
+#' @param data A validated data.frame that is the output of `st_validate()`
 #' @param subgroup A character vector of subgrouping variables. By default,
 #'  aggregate estimates are generated for the overall data, as well as
 #'  age group, sex, and age group + sex subgroups.
@@ -63,7 +65,7 @@
 
 st_aggregate <- function(
     data, subgroup = c("age_group", "sex", "age_group + sex"),
-    borderline = c("negative", "positive", NA), round_digits = 2,
+    borderline = c("negative", "positive", NA), round_digits = 4,
     test_combination = NULL, ci_type = c("none", "boot_norm", "boot_basic",
                                          "boot_perc", "boot_bca")
 ) {
@@ -176,7 +178,7 @@ group_summarise <- function(data, group = NULL, round_digits) {
     test_combination = NA,
     numerator = sum(result_cat_pos, na.rm = TRUE),
     denominator = sum(!is.na(result_cat)),
-    seroprev = round(numerator/denominator*100, round_digits),
+    seroprev = round(numerator/denominator, round_digits),
     seroprev_95_ci_lower = NA,
     seroprev_95_ci_upper = NA,
     ab_denominator = sum(!is.na(result)),

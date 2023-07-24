@@ -60,6 +60,7 @@ knitr::include_graphics("../man/figures/screenshot_1.png")
 `st_validate()` produced a detailed report of any errors which need to be addressed before proceeding. To keep things concise, I replace `age_group`, `age`, and `sex` with some correct values and also correct the `result_cat`.
 
 ```{r address_issues}
+set.seed(4567)
 new_raw_data <- sample_raw_data %>%
   dplyr::mutate(
     age_group = rep(c("0-9", "10-19", "20-29", "30-39", "40+"), each=20),
@@ -120,8 +121,8 @@ head(estimates)
 ## 3) Export to Excel for submission
 The `st_save()` function exports validated data and generated estimates to an Excel document.
 
-```{r}
-# st_save(validated_df, estimates, path = tempfile())
+```{r, eval=FALSE}
+st_save(validated_df, estimates, path = "submission.xlsx")
 ```
 
 Some fields, mostly metadata, in the exported document will still need to be filled in. The first sheet of the document has the necessary instructions. When you are done, the document is ready to be submitted on [SeroTracker.com](https://serotracker.com){target="_blank"}.

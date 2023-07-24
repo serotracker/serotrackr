@@ -52,6 +52,7 @@ validated_df <- st_validate(
 )
 
 estimates <- st_aggregate(validated_df)
+# st_save(validated_df, estimates, path = "test.xlsx")
 
 
 
