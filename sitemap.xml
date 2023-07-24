@@ -64,13 +64,13 @@
     <loc>https://serotracker.github.io/serotrackr/reference/sample_raw_data.html</loc>
   </url>
   <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/save_xlsx.html</loc>
-  </url>
-  <url>
     <loc>https://serotracker.github.io/serotrackr/reference/serotrackr-package.html</loc>
   </url>
   <url>
     <loc>https://serotracker.github.io/serotrackr/reference/st_aggregate.html</loc>
+  </url>
+  <url>
+    <loc>https://serotracker.github.io/serotrackr/reference/st_save.html</loc>
   </url>
   <url>
     <loc>https://serotracker.github.io/serotrackr/reference/st_validate.html</loc>
