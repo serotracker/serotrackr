@@ -16,10 +16,9 @@ assays
 }
 \description{
 A list of assays for different pathogens. This list can be used in the
-st_validate() function to select assays.
+\code{st_validate()} function to select assays.
 }
 \examples{
 assays$`SARS-CoV-2`$`EUROIMMUN - IgG - Anti-SARS-CoV-2 ELISA IgG`
-
 }
 \keyword{datasets}

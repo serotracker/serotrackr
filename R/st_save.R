@@ -1,9 +1,9 @@
 
 # TODO add colnames for `other columns` in Data sheet.
-# TODO automate scope on Study Metadata sheet.
 # TODO check for validation rules.
 # TODO add adm0 unique code somewhere (not just country name).
 # TODO check data and estimates have the same object ID.
+# TODO study sheet n_participants should be length of unique ID s.
 
 #' @title Save to xlsx format
 #' @description
@@ -204,6 +204,12 @@ st_save <- function(data, estimates, path) {
 
 # Helper functions --------------------------------------------------------
 
+#' Add missing columns with NA vaules
+#'
+#' @param data A validated dataframe, output of `st_validate()`.
+#' @param colname Column names to check if they exist in the `data`. Any missing
+#'  column names will be created with logical NA values.
+#' @noRd
 add_missing_cols <- function(data, colname) {
   cols_to_add <- colname[!colname %in% names(data)]
   if(length(cols_to_add) != 0) data[cols_to_add] <- NA
@@ -211,6 +217,11 @@ add_missing_cols <- function(data, colname) {
 }
 
 
+#' Find scope based on number of adm1 and adm2 regions
+#'
+#' @param data A dataframe with adm1 and adm2 columns, even if containing only
+#'  NA values.
+#' @noRd
 find_scope <- function(data) {
   uniq_adm1 <- unique(data$adm1)
   uniq_adm2 <- unique(data$adm2)

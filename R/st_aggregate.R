@@ -1,5 +1,4 @@
 
-# FIXME `age_group + sex` does not generate all sex and age_group combinations
 # TODO Address R CMD check warnings and notes
 # TODO add functionality to `test_combination` and `ci_type` arguments
 # TODO fix case insensitivity for result_cat in st_validate()
@@ -19,12 +18,13 @@
 #'  age group, sex, and age group + sex subgroups.
 #' @param borderline How should borderline results be treated? Default is as
 #'  negative.
+#' @param add_ci Boolean. Whether to add binomial proportion confidence interval.
+#'  It is calculated using the Wilson score interval method through the
+#'  `binom::binom.confint()` function.
 #' @param round_digits Integer indicating the number of decimal places of the
 #'  estimate. It is passed to the digits argument of `base::round()`.
 #' @param test_combination Not functional yet. When data is based on more than
 #'  one assay, what is the relationship between those assays?
-#' @param ci_type Not functional yet. Method to calculate 95% confidence
-#'  intervals
 #'
 #' @return A summarized data.frame
 #' @export
@@ -65,9 +65,8 @@
 
 st_aggregate <- function(
     data, subgroup = c("age_group", "sex", "age_group + sex"),
-    borderline = c("negative", "positive", NA), round_digits = 4,
-    test_combination = NULL, ci_type = c("none", "boot_norm", "boot_basic",
-                                         "boot_perc", "boot_bca")
+    borderline = c("negative", "positive", NA), add_ci = TRUE,
+    round_digits = 4, test_combination = NULL
 ) {
 
   ## Extract attributes ------------------------------------------------------
@@ -105,7 +104,8 @@ st_aggregate <- function(
 
     ### Overall -----------------------------------------------------------------
 
-    summarised_overall <- group_summarise(data, round_digits = round_digits)
+    summarised_overall <- group_summarise(data, add_ci = add_ci,
+                                          round_digits = round_digits)
     summarised_overall <- dplyr::mutate(summarised_overall,
                                         subgroup = "overall", strata = NA,
                                         .after=dataset_id)
@@ -114,6 +114,7 @@ st_aggregate <- function(
 
     if (("age_group" %in% names(data)) && ("age_group" %in% subgroup)) {
       summarised_age_group <- group_summarise(data, "age_group",
+                                              add_ci = add_ci,
                                               round_digits = round_digits)
       summarised_age_group <- dplyr::mutate(summarised_age_group,
                                             subgroup = "age_group",
@@ -123,7 +124,8 @@ st_aggregate <- function(
     ### sex ---------------------------------------------------------------------
 
     if (("sex" %in% names(data)) && ("sex" %in% subgroup)) {
-      summarised_sex <- group_summarise(data, "sex", round_digits=round_digits)
+      summarised_sex <- group_summarise(data, "sex", add_ci = add_ci,
+                                        round_digits=round_digits)
       summarised_sex <- dplyr::mutate(summarised_sex,
                                       subgroup = "sex", strata = sex,
                                       .after = dataset_id)
@@ -134,6 +136,7 @@ st_aggregate <- function(
     if (all(c("age_group", "sex") %in% names(data)) &&
         all(c("age_group", "sex") %in% subgroup)) {
       summarised_agesex <- group_summarise(data, c("age_group", "sex"),
+                                           add_ci = add_ci,
                                            round_digits = round_digits)
       summarised_agesex <- dplyr::mutate(summarised_agesex,
                                          subgroup = "age_group + sex",
@@ -161,7 +164,18 @@ st_aggregate <- function(
 
 # Helper functions --------------------------------------------------------
 
-group_summarise <- function(data, group = NULL, round_digits) {
+#' Performs `dplyr::summarise()` for each specified group
+#'
+#' @param data A validated dataframe, output of `st_validate()`.
+#' @param group Group for which `dplyr::summarize()` is perfomed. If left as
+#'  NULL, it will calculate overall summarized values.
+#' @param add_ci Boolean. Whether to add binomial proportion confidence interval.
+#'  It is calculated using the Wilson score interval method through the
+#'  `binom::binom.confint()` function.
+#' @param round_digits Integer indicating the number of decimal places of the
+#'  estimate. It is passed to the digits argument of `base::round()`.
+#' @noRd
+group_summarise <- function(data, group = NULL, add_ci, round_digits) {
   options(dplyr.summarise.inform = FALSE)
   data_grouped <- dplyr::group_by(data,
                                   dplyr::across(dplyr::any_of(c("dataset_id",
@@ -179,8 +193,32 @@ group_summarise <- function(data, group = NULL, round_digits) {
     numerator = sum(result_cat_pos, na.rm = TRUE),
     denominator = sum(!is.na(result_cat)),
     seroprev = round(numerator/denominator, round_digits),
-    seroprev_95_ci_lower = NA,
-    seroprev_95_ci_upper = NA,
+    seroprev_95_ci_lower = dplyr::if_else(
+      isTRUE(add_ci),
+      round(
+        binom::binom.confint(numerator, denominator, methods = "wilson")$lower,
+        round_digits
+      ),
+      NA
+    ),
+    seroprev_95_ci_upper = dplyr::if_else(
+      isTRUE(add_ci),
+      round(
+        binom::binom.confint(numerator, denominator, methods = "wilson")$upper,
+        round_digits
+      ),
+      NA
+    ),
+    # seroprev_95_ci_lower = round(
+    #   as.data.frame(Hmisc::binconf(numerator, denominator))$Lower,
+    #   round_digits
+    # ),
+    # seroprev_95_ci_upper = round(
+    #   as.data.frame(Hmisc::binconf(numerator, denominator))$Upper,
+    #   round_digits
+    # ),
+    # seroprev_95_ci_lower = NA,
+    # seroprev_95_ci_upper = NA,
     ab_denominator = sum(!is.na(result)),
     ab_titer_min = min(result),
     ab_titer_max = max(result),
@@ -210,6 +248,10 @@ group_summarise <- function(data, group = NULL, round_digits) {
 
 
 
+#' Summarize age min and max
+#'
+#' @param data_grouped A grouped dataframe.
+#' @noRd
 summarize_age_min_max <- function(data_grouped) {
   if ("age" %in% names(data_grouped)) {
     data_summarised_age <- dplyr::summarise(data_grouped,
@@ -233,6 +275,10 @@ summarize_age_min_max <- function(data_grouped) {
 
 
 
+#' Summarize adm1 and adm2
+#'
+#' @param data_grouped A grouped dataframe.
+#' @noRd
 summarize_adm1_adm2 <- function(data_grouped) {
   if ("adm1" %in% names(data_grouped)) {
     data_summarised_adm1 <- dplyr::summarise(

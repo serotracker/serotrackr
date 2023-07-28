@@ -15,7 +15,11 @@ Based on the CGAZ dataset from geoBoundaries: \url{https://github.com/wmgeolab/g
 regions
 }
 \description{
-A nested named list of regions at three administrative (ADM) levels. This list can be used in the adm1() and adm2() functions to rename geographic areas based on SeroTracker's predefined list of region names. This will help automate the generation of visualizations and analyses.
+A nested named list of regions at three administrative (ADM) levels. This
+list can be used in the \code{st_validate()} or \code{regions_when()} functions to
+rename geographic areas based on SeroTracker's predefined list of region
+names. This will help automate the generation of visualizations and
+analyses.
 }
 \details{
 adm0: Use this level to select your study's country.

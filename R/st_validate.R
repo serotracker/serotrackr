@@ -34,8 +34,6 @@
 #'  values are: `f`, `m`, `o`, `female`, `male`, or `other` ignoring case.
 #' @param include_others include additional columns or not
 #' @return A validated data.frame
-#' @import dplyr stringr
-#' @importFrom dplyr `%>%`
 #' @export
 #' @examples
 #' st_validate(sample_raw_data,
@@ -1110,6 +1108,7 @@ st_validate <- function(data,
 #' @param err_msg Error message for when the `expr` is FALSE
 #'
 #' @return If `expr` is FALSE, it stops the execution and returns the `err_msg`.
+#' @noRd
 #'
 #' @examples
 #' f <- function(data) {
@@ -1142,9 +1141,7 @@ assert <- function (expr, err_msg) {
 #'
 #' @return A character vector of error messages based on rules applied. If no
 #' errors occur, a vector of length zero is returned.
-#' @import dplyr
-#' @importFrom dplyr `%>%`
-#'
+#' @noRd
 #' @examples
 #' err_msgs <- validate_data(sample_raw_data, rules["sex_presetVal"],
 #'                           mode = "col", col_to_validate = "sex")
@@ -1189,7 +1186,7 @@ validate_data <- function(data, rules, mode = c("col", "val"),
 #' @param msg A string scalar.
 #'
 #' @return A message in the console.
-#'
+#' @noRd
 #' @examples
 #' msg_progress("age_group")
 
@@ -1215,7 +1212,7 @@ msg_progress <- function(msg) {
 #'
 #' @return A styled message. If the length of `msg` is more than 1, the message
 #' will be broken down in bullet points.
-#'
+#' @noRd
 #' @examples
 #' timestamp <- Sys.time()
 #' msg_result("age_group", "is a valid column.", error = FALSE,
@@ -1273,7 +1270,7 @@ msg_result <- function(arg, msg, error = TRUE, start_time = NULL) {
 #' @param col_name Column name supplied by user for this `arg`. Can be supplied
 #' using `deparse(substitute(argument))`.
 #' @param ... Additional argument passed to `msg_result()`.
-#'
+#' @noRd
 #' @return Prints a message to the console.
 #'
 
@@ -1300,7 +1297,7 @@ msg_colNotFound <- function(arg, data_name, col_name, ...) {
 #' @param ... Additional argument passed to `msg_result()`.
 #'
 #' @return Prints a message to the console.
-#'
+#' @noRd
 #' @examples
 #' msg_wrongType("age", req_type = "num", mode = "no_typeof")
 
@@ -1337,7 +1334,7 @@ msg_wrongType <- function(arg, req_type = c("char", "num", "date_char"),
 #' @param digits Number of digits of the generated random ID.
 #'
 #' @return A random number
-#'
+#' @noRd
 #' @examples
 #' set.seed(4567)
 #' generate_obj_id(5)
@@ -1362,7 +1359,7 @@ generate_obj_id <- function(digits) {
 #'
 #' @return A dataframe with additional attributes.
 #' @note An `id` attribute is also added using `generate_obj_id()`.
-#'
+#' @noRd
 #' @examples
 #' df <- add_attr(sample_raw_data, pathogen = "SARS-CoV-2",
 #'                adm0 = regions$adm0$Canada)

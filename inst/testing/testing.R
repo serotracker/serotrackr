@@ -5,7 +5,10 @@ library(dplyr)
 library(stringr)
 library(devtools)
 load_all()
-
+# TODO add warning for dropping NAs
+# TODO add CIs, both binomial and bootstrapping.
+# TODO add wrapper function for regions
+# TODO test the package against other datasets
 
 # TO DO -------------------------------------------------------------------
 
@@ -51,7 +54,7 @@ validated_df <- st_validate(
   include_others = TRUE
 )
 
-estimates <- st_aggregate(validated_df)
+estimates <- st_aggregate(validated_df, add_ci = TRUE)
 # st_save(validated_df, estimates, path = "test.xlsx")
 
 
@@ -97,3 +100,36 @@ b <- boot_ci(data=dat_ci, statistic=prevalence_fun, type = "boot_bca",
 b
 
 
+
+# Binomial 95% CI ---------------------------------------------------------
+
+validated_df <- validated_df %>%
+  tidyr::drop_na(result) %>%
+  dplyr::mutate(
+    lower = as.data.frame(Hmisc::binconf(4, 22))$Lower,
+    upper = as.data.frame(Hmisc::binconf(4, 22))$Upper
+  )
+
+a <- Hmisc::binconf(22, 45) %>% as.data.frame()
+
+as.data.frame(Hmisc::binconf(22, 45))$Lower
+as.data.frame(Hmisc::binconf(22, 45))$Upper
+
+num <- c(22, 33, 44)
+denom <- c(45, 55, 65)
+binom.test(num, denom)
+Hmisc::binconf(num, denom)
+binom::binom.confint(num, denom, methods = "wilson")$lower
+binom::binom.confint(num, denom, methods = "wilson")$upper
+
+
+p <- num/denom
+p + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/denom)*p*(1-p))
+
+
+b <- binom.test(22, 45)
+attributes(b)
+b$conf.int[1]
+b$conf.int[2]
+
+22/45

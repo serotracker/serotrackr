@@ -8,9 +8,9 @@ st_aggregate(
   data,
   subgroup = c("age_group", "sex", "age_group + sex"),
   borderline = c("negative", "positive", NA),
+  add_ci = TRUE,
   round_digits = 4,
-  test_combination = NULL,
-  ci_type = c("none", "boot_norm", "boot_basic", "boot_perc", "boot_bca")
+  test_combination = NULL
 )
 }
 \arguments{
@@ -23,14 +23,15 @@ age group, sex, and age group + sex subgroups.}
 \item{borderline}{How should borderline results be treated? Default is as
 negative.}
 
+\item{add_ci}{Boolean. Whether to add binomial proportion confidence interval.
+It is calculated using the Wilson score interval method through the
+\code{binom::binom.confint()} function.}
+
 \item{round_digits}{Integer indicating the number of decimal places of the
 estimate. It is passed to the digits argument of \code{base::round()}.}
 
 \item{test_combination}{Not functional yet. When data is based on more than
 one assay, what is the relationship between those assays?}
-
-\item{ci_type}{Not functional yet. Method to calculate 95\% confidence
-intervals}
 }
 \value{
 A summarized data.frame
