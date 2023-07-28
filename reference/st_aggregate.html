@@ -55,9 +55,9 @@ Generate aggregate estimates based on validated individual level data.</p>
 <span>  <span class="va">data</span>,</span>
 <span>  subgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span>, <span class="st">"age_group + sex"</span><span class="op">)</span>,</span>
 <span>  borderline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"negative"</span>, <span class="st">"positive"</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
+<span>  add_ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  round_digits <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  test_combination <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ci_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"boot_norm"</span>, <span class="st">"boot_basic"</span>, <span class="st">"boot_perc"</span>, <span class="st">"boot_bca"</span><span class="op">)</span></span>
+<span>  test_combination <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -78,6 +78,12 @@ age group, sex, and age group + sex subgroups.</p></dd>
 negative.</p></dd>
 
 
+<dt>add_ci</dt>
+<dd><p>Boolean. Whether to add binomial proportion confidence interval.
+It is calculated using the Wilson score interval method through the
+<code><a href="https://rdrr.io/pkg/binom/man/binom.confint.html" class="external-link">binom::binom.confint()</a></code> function.</p></dd>
+
+
 <dt>round_digits</dt>
 <dd><p>Integer indicating the number of decimal places of the
 estimate. It is passed to the digits argument of <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">base::round()</a></code>.</p></dd>
@@ -86,11 +92,6 @@ estimate. It is passed to the digits argument of <code><a href="https://rdrr.io/
 <dt>test_combination</dt>
 <dd><p>Not functional yet. When data is based on more than
 one assay, what is the relationship between those assays?</p></dd>
-
-
-<dt>ci_type</dt>
-<dd><p>Not functional yet. Method to calculate 95% confidence
-intervals</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -134,31 +135,31 @@ intervals</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Mapping columns and validating data</span> <span style="color: #00BBBB;">─────────────────────────────────────────</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> age_group ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">age_group</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [519ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">age_group</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [612ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> age ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">age</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [24ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">age</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [29ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> sex ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">sex</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [13ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">sex</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [15ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm0 ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm0</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [114ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm0</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [107ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm1 ...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm1</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [11ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm2 ...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">adm2</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [17ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> collection_start_date ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_start_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [485ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_start_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [230ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> collection_end_date ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_end_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [21ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">collection_end_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [25ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> test_id ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">test_id</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [8ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">test_id</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [10ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> result ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [26ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [12ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> result_cat ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result_cat</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [11ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">result_cat</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [27ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> dataset_id ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">dataset_id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [3ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">dataset_id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [4ms]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> id ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [12ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="background-color: #00BB00;">id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [14ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Validation finished</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Success!</span> Validated data created.</span>
@@ -168,21 +169,21 @@ intervals</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 28 × 27</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    dataset_id subgroup  strata age_group age_min age_max sex   pop_adj test_adj</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>          1 overall   <span style="color: #BB0000;">NA</span>     All             0     118 All   FALSE   FALSE   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>          2 overall   <span style="color: #BB0000;">NA</span>     All             0     114 All   FALSE   FALSE   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>          1 age_group 0-9    0-9             0       9 All   FALSE   FALSE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>          1 overall   <span style="color: #BB0000;">NA</span>     All             2     115 All   FALSE   FALSE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>          2 overall   <span style="color: #BB0000;">NA</span>     All             2     118 All   FALSE   FALSE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>          1 age_group 0-9    0-9             2       9 All   FALSE   FALSE   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>          1 age_group 10-19  10-19          10      19 All   FALSE   FALSE   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>          1 age_group 20-29  20-29          20      28 All   FALSE   FALSE   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>          1 age_group 30-39  30-39          31      35 All   FALSE   FALSE   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>          1 age_group 40+    40+            43     118 All   FALSE   FALSE   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>          2 age_group 0-9    0-9             0       9 All   FALSE   FALSE   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>          2 age_group 10-19  10-19          10      16 All   FALSE   FALSE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>          1 age_group 20-29  20-29          22      29 All   FALSE   FALSE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>          1 age_group 30-39  30-39          30      39 All   FALSE   FALSE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>          1 age_group 40+    40+            44     115 All   FALSE   FALSE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>          2 age_group 0-9    0-9             2       9 All   FALSE   FALSE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>          2 age_group 10-19  10-19          10      18 All   FALSE   FALSE   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>          2 age_group 20-29  20-29          21      29 All   FALSE   FALSE   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18 more variables: adm1 &lt;chr&gt;, adm2 &lt;chr&gt;, start_date &lt;date&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   end_date &lt;date&gt;, test_id_1 &lt;chr&gt;, test_id_2 &lt;chr&gt;, test_id_3 &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   test_combination &lt;lgl&gt;, numerator &lt;dbl&gt;, denominator &lt;int&gt;, seroprev &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   seroprev_95_ci_lower &lt;lgl&gt;, seroprev_95_ci_upper &lt;lgl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   seroprev_95_ci_lower &lt;dbl&gt;, seroprev_95_ci_upper &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ab_denominator &lt;int&gt;, ab_titer_min &lt;dbl&gt;, ab_titer_max &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ab_titer_mean &lt;dbl&gt;, ab_titer_sd &lt;dbl&gt;</span></span>
 </code></pre></div>

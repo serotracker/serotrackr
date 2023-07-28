@@ -25,34 +25,13 @@
     <loc>https://serotracker.github.io/serotrackr/news/index.html</loc>
   </url>
   <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/add_attr.html</loc>
-  </url>
-  <url>
     <loc>https://serotracker.github.io/serotrackr/reference/assays.html</loc>
   </url>
   <url>
     <loc>https://serotracker.github.io/serotrackr/reference/assays_df.html</loc>
   </url>
   <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/assert.html</loc>
-  </url>
-  <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/generate_obj_id.html</loc>
-  </url>
-  <url>
     <loc>https://serotracker.github.io/serotrackr/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/msg_colNotFound.html</loc>
-  </url>
-  <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/msg_progress.html</loc>
-  </url>
-  <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/msg_result.html</loc>
-  </url>
-  <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/msg_wrongType.html</loc>
   </url>
   <url>
     <loc>https://serotracker.github.io/serotrackr/reference/regions.html</loc>
@@ -74,8 +53,5 @@
   </url>
   <url>
     <loc>https://serotracker.github.io/serotrackr/reference/st_validate.html</loc>
-  </url>
-  <url>
-    <loc>https://serotracker.github.io/serotrackr/reference/validate_data.html</loc>
   </url>
 </urlset>
