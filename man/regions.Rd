@@ -16,7 +16,7 @@ regions
 }
 \description{
 A nested named list of regions at three administrative (ADM) levels. This
-list can be used in the \code{st_validate()} or \code{regions_when()} functions to
+list can be used in the \code{st_validate()} or \code{st_locate()} functions to
 rename geographic areas based on SeroTracker's predefined list of region
 names. This will help automate the generation of visualizations and
 analyses.

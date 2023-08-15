@@ -11,7 +11,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 ## Goal
 
-***serotrackr*** facilitates submissions on the SeroTracker 2.0 website.
+*serotrackr* facilitates submissions on the SeroTracker 2.0 website.
 
 ## Installation
 
@@ -23,7 +23,6 @@ devtools::install_github("serotracker/serotrackr")
 
 ## Get started
 
-[This](https://serotracker.github.io/serotrackr/articles/serotrackr.html)
-vignette guides you through the best practices of using *serotrackr*.
-
-PS: The logo is subject to change.
+[This
+vignette](https://serotracker.github.io/serotrackr/articles/serotrackr.html)
+guides you through the best practices of using *serotrackr*.

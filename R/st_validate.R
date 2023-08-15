@@ -1117,7 +1117,6 @@ st_validate <- function(data,
 #' }
 #' f(sample_raw_data)
 #'
-
 assert <- function (expr, err_msg) {
   if(missing(err_msg)) err_msg <- paste("Condition",
                                         deparse(as.list(match.call())$expr),
@@ -1146,7 +1145,6 @@ assert <- function (expr, err_msg) {
 #' err_msgs <- validate_data(sample_raw_data, rules["sex_presetVal"],
 #'                           mode = "col", col_to_validate = "sex")
 #' err_msgs
-
 validate_data <- function(data, rules, mode = c("col", "val"),
                           col_to_validate = names(data), rules_msgCut = NULL) {
   values <- as.data.frame(validate::values(validate::confront(data, rules)))
@@ -1158,7 +1156,7 @@ validate_data <- function(data, rules, mode = c("col", "val"),
     err_unique_n <- length(unique(data[[col_to_validate]][err_index]))
     if (err_n > 0) {
       err_val_head <- cli::cli_vec(
-        x = head(unique(data[[col_to_validate]][err_index])),
+        x = utils::head(unique(data[[col_to_validate]][err_index])),
         style = list('vec-trunc'=3, 'vec-trunc-style'='head')
       )
       col_specific_msg <- cli::format_inline(
@@ -1189,7 +1187,6 @@ validate_data <- function(data, rules, mode = c("col", "val"),
 #' @noRd
 #' @examples
 #' msg_progress("age_group")
-
 msg_progress <- function(msg) {
   stopifnot(!is.null(msg))
   stopifnot(is.character(msg))
@@ -1217,7 +1214,6 @@ msg_progress <- function(msg) {
 #' timestamp <- Sys.time()
 #' msg_result("age_group", "is a valid column.", error = FALSE,
 #'            start_time = timestamp)
-
 msg_result <- function(arg, msg, error = TRUE, start_time = NULL) {
   if(!is.null(start_time)) {
     time_elapsed <- Sys.time() - start_time
@@ -1231,8 +1227,10 @@ msg_result <- function(arg, msg, error = TRUE, start_time = NULL) {
       cli::cli_div(theme = list(div = list(`margin-left`=0, `text-exdent`=2)))
       cli::cli_text(
         ifelse(error,
-               paste(cli::col_red(cli::symbol$cross), cli::bg_red(arg)),
-               paste(cli::col_green(cli::symbol$tick), cli::bg_green(arg))), " ",
+               paste(cli::col_red(cli::symbol$cross),
+                     cli::bg_red(cli::col_br_white(arg))),
+               paste(cli::col_green(cli::symbol$tick),
+                     cli::bg_green(cli::col_br_white(arg)))), " ",
         ifelse(error,
                cli::col_none(cli::format_inline(msg)),
                cli::col_grey(cli::format_inline(msg))),
@@ -1246,7 +1244,8 @@ msg_result <- function(arg, msg, error = TRUE, start_time = NULL) {
   else if (length(msg) > 1) {
     # Always error
     cli::cli({
-      cli::cli_text(cli::col_red(cli::symbol$cross), " ", cli::bg_red(arg),
+      cli::cli_text(cli::col_red(cli::symbol$cross), " ",
+                    cli::bg_red(cli::col_br_white(arg)),
                     if(!is.null(start_time)) {
                       cli::col_cyan(cli::format_inline(" [{pretty_time}]"))
                     }
@@ -1266,14 +1265,13 @@ msg_result <- function(arg, msg, error = TRUE, start_time = NULL) {
 #'
 #' @param arg Preset column name or argument for which the validation is run.
 #' @param data_name Name of the raw data object supplied by user. Can be
-#' supplied using `deparse(substitute(data))`
+#' supplied using `deparse(substitute(data))`.
 #' @param col_name Column name supplied by user for this `arg`. Can be supplied
 #' using `deparse(substitute(argument))`.
 #' @param ... Additional argument passed to `msg_result()`.
 #' @noRd
 #' @return Prints a message to the console.
 #'
-
 msg_colNotFound <- function(arg, data_name, col_name, ...) {
   msg_result(arg,
              paste0("Column `{.emph ", col_name, "}` ",
@@ -1300,7 +1298,6 @@ msg_colNotFound <- function(arg, data_name, col_name, ...) {
 #' @noRd
 #' @examples
 #' msg_wrongType("age", req_type = "num", mode = "no_typeof")
-
 msg_wrongType <- function(arg, req_type = c("char", "num", "date_char"),
                           mode = c("col", "val", "no_typeof"), name = NULL,
                           data = NULL, ...) {
@@ -1338,7 +1335,6 @@ msg_wrongType <- function(arg, req_type = c("char", "num", "date_char"),
 #' @examples
 #' set.seed(4567)
 #' generate_obj_id(5)
-
 generate_obj_id <- function(digits) {
   obj_id <- sample(1:9, 1)
   for (i in 2:digits) {
@@ -1364,7 +1360,6 @@ generate_obj_id <- function(digits) {
 #' df <- add_attr(sample_raw_data, pathogen = "SARS-CoV-2",
 #'                adm0 = regions$adm0$Canada)
 #' attributes(df)
-
 add_attr <- function(data, pathogen, adm0) {
   stopifnot(is.data.frame(data), is.character(pathogen), is.character(adm0))
   attr(data, "id") <- generate_obj_id(digits = 5)

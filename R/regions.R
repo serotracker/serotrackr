@@ -3,7 +3,7 @@
 #'
 #' @description
 #' A nested named list of regions at three administrative (ADM) levels. This
-#'  list can be used in the `st_validate()` or `regions_when()` functions to
+#'  list can be used in the `st_validate()` or `st_locate()` functions to
 #'  rename geographic areas based on SeroTracker's predefined list of region
 #'  names. This will help automate the generation of visualizations and
 #'  analyses.

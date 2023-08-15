@@ -223,7 +223,7 @@ group_summarise <- function(data, group = NULL, add_ci, round_digits) {
     ab_titer_min = min(result),
     ab_titer_max = max(result),
     ab_titer_mean = mean(result),
-    ab_titer_sd = sd(result)
+    ab_titer_sd = stats::sd(result)
   )
 
   # Add columns that are not among grouping variables with "All" as only value
