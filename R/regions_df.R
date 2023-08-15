@@ -1,5 +1,5 @@
 
-#' Regions data
+#' Regions dataframe
 #'
 #' @description
 #' Regions data at three administrative levels
@@ -14,5 +14,5 @@
 #'   \item{NAME_2}{District/municipality/ or equivalent name of the region}
 #'   \item{shapeID_v5}{Unique ID for the region and administartive level}
 #' }
-#' @source Based on the CGAZ dataset from geoBoundaries: <https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/CGAZ>
+#' @source Based on the CGAZ dataset from \href{https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/CGAZ}{geoBoundaries}.
 "regions_df"

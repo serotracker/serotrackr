@@ -1,5 +1,8 @@
 # serotrackr (development version)
 
+* Updated the theme of the pkgdown website.
+* Organized the [Reference page](https://serotracker.github.io/serotrackr/reference/index.html) of the pkgdown website.
+
 # serotrackr 0.2.0
 
 * Added `st_locate()` to help with converting region names to `serotrackr`'s acceptable region codes. First, the function has an automatic component where it tries to match the user's region names to those predefined in `serotrackr::regions_df`. This is an exact case insensitive match that treats accented and unaccented letters the same. The function then produces a report of the user's unmatched unique region names. In its second component, the function has a dot-dot-dot (ellipsis) argument where region codes can be defined for each unmatched unique region name one by one.

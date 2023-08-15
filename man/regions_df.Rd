@@ -3,7 +3,7 @@
 \docType{data}
 \name{regions_df}
 \alias{regions_df}
-\title{Regions data}
+\title{Regions dataframe}
 \format{
 \code{regions_df}
 A data frame with 53087 rows and 6 columns:
@@ -17,7 +17,7 @@ A data frame with 53087 rows and 6 columns:
 }
 }
 \source{
-Based on the CGAZ dataset from geoBoundaries: \url{https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/CGAZ}
+Based on the CGAZ dataset from \href{https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/CGAZ}{geoBoundaries}.
 }
 \usage{
 regions_df

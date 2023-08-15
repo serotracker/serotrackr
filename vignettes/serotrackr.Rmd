@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 
-***serotrackr*** helps you prepare your raw data for submission to [SeroTracker](https://serotracker.com){target="_blank"}. We will use a sample raw dataset included in the package to demonstrate the workflow of serotrackr:
+*serotrackr* helps you prepare your raw data for submission to [SeroTracker](https://serotracker.com){target="_blank"}. We will use a sample raw dataset included in the package to demonstrate the workflow of serotrackr:
 
 ```{r setup, message=FALSE}
 library(serotrackr)

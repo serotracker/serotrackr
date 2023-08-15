@@ -1,5 +1,47 @@
 url: https://serotracker.github.io/serotrackr/
 template:
   bootstrap: 5
+  theme: github-dark
+  bslib:
+    bg: "#364e60"
+    fg: "#ffffff"
+    primary: "#54a6ba"
+    code-bg: "#273c4d"
+
 development:
   mode: auto
+
+reference:
+- title: Main verbs
+  desc: >
+    Use these functions, in the order below, to make your data ready for submission.
+  contents:
+  - st_validate
+  - st_locate
+  - st_aggregate
+  - st_save
+
+- title: Built-in data
+- subtitle: Regions
+  desc: >
+    Standard predefined regions, from country to municipality level. Both
+    objects below contain the same data in different formats. You should mostly
+    use `regions` in `st_validate()` and `st_locate()`. `regions_df` is only
+    for your easy exploration of region options.
+  contents:
+  - regions
+  - regions_df
+
+- subtitle: Assays
+  desc: >
+    Standard predefined assays for different pathogens. Options for in-house
+    assays are also available. Both objects below contain the same data in
+    different formats. You should mostly use `assays` in `st_validate()`.
+    `assays_df` is only for your easy exploration of assay options.
+  contents:
+  - assays
+  - assays_df
+
+- subtitle: Sample data
+  contents:
+  - sample_raw_data

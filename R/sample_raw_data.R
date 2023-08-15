@@ -1,5 +1,5 @@
 
-#' Sample raw data
+#' Example fictitious data
 #'
 #' @description
 #' Example dataset to showcase the package's expectations from a raw dataset and the package's workflow to make the raw data ready for submission to SeroTracker 2.0.

@@ -5,7 +5,7 @@
 # TODO check data and estimates have the same object ID.
 # TODO study sheet n_participants should be length of unique ID s.
 
-#' @title Save to xlsx format
+#' @title Export data to Excel
 #' @description
 #' `r lifecycle::badge("experimental")`
 #' Organizes individual level data and aggregate estimates into a single xlsx

@@ -15,6 +15,8 @@ load_all()
 # TODO Add github logo and url to pkgdown
 # TODO On `Reference` page of pkgdown website, put objects in meaningful groups
 # TODO Remove `clean()`
+# TODO Add R CMD Check and other banners to README
+# TODO Add experimental, ... tags to pkgdown website
 # TODO Add source link to each vignette
 # TODO Explore creating a specific class for the output
 # TODO Consider using readr::parse_number() for `age` and `result` values
@@ -132,6 +134,10 @@ st_locate(sample_raw_data, adm0 = regions$adm0$Canada,
           adm2 = regions$adm2$Canada$Alberta$Calgary,
           "ab" = regions$adm1$Canada$Yukon)
 
+st_locate(sample_raw_data,
+          adm0 = regions$adm0$Canada,
+          adm1 = regions$adm1$Canada$Alberta,
+          adm2 = regions$adm2$Canada$Alberta$Calgary)
 
 
 zzz <- st_locate(sample_raw_data, adm0 = regions$adm0$Canada,

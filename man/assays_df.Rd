@@ -3,7 +3,7 @@
 \docType{data}
 \name{assays_df}
 \alias{assays_df}
-\title{Assays data}
+\title{Assays dataframe}
 \format{
 \code{assays_df}
 A data frame with 309 rows and 16 columns:
@@ -27,7 +27,7 @@ A data frame with 309 rows and 16 columns:
 }
 }
 \source{
-Based on the list of assays gathered by SeroTracker for SARS-CoV-2
+Based on the list of assays gathered by SeroTracker for SARS-CoV-2.
 }
 \usage{
 assays_df

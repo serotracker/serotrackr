@@ -1,5 +1,5 @@
 
-#' Assays data
+#' Assays dataframe
 #'
 #' @description
 #' Assay data for different pathogens.
@@ -25,5 +25,5 @@
 #'   \item{quantitative_qualitative}{Quantitative and/or qualitative}
 #'   \item{who_doherty_find_verified}{WHO Doherty find verified}
 #' }
-#' @source Based on the list of assays gathered by SeroTracker for SARS-CoV-2
+#' @source Based on the list of assays gathered by SeroTracker for SARS-CoV-2.
 "assays_df"

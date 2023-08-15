@@ -17,7 +17,7 @@
 #'
 #' adm2: Use this level to select your study's district/municipality or equivalent division.
 #'
-#' @source Based on the CGAZ dataset from geoBoundaries: <https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/CGAZ>
+#' @source Based on the CGAZ dataset from \href{https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/CGAZ}{geoBoundaries}.
 #'
 #' @examples
 #' regions$adm2$Canada$Alberta$Calgary

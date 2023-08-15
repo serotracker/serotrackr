@@ -8,7 +8,7 @@
 # age_group/sex subgroups.
 
 
-#' Aggregate data
+#' Aggregate validated data
 #' @description
 #' `r lifecycle::badge("experimental")`
 #' Generate aggregate estimates based on validated individual level data.

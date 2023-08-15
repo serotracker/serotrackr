@@ -18,7 +18,7 @@ st_locate(
 \item{data}{A dataframe.}
 
 \item{adm0}{A string representing one country (adm0) code. Use
-\code{serotrackr::regions} to select it.}
+\code{serotrackr::regions$adm0$YourCountry} to select it.}
 
 \item{adm1, adm2}{a string or an unquoted name of a character column that
 contains the state/province (adm1), or district/municipality

@@ -24,7 +24,7 @@
 #'  names.
 #' @param data A dataframe.
 #' @param adm0 A string representing one country (adm0) code. Use
-#'  `serotrackr::regions` to select it.
+#'  `serotrackr::regions$adm0$YourCountry` to select it.
 #' @param adm1,adm2 a string or an unquoted name of a character column that
 #'  contains the state/province (adm1), or district/municipality
 #'  (adm2) names or codes. If your study is conducted in only one adm1 or adm2
@@ -89,51 +89,51 @@ st_locate <- function(data, adm0, adm1, adm2 = NULL, ...,
 
   data_name <- deparse(substitute(data))
 
-  ### adm1 --------------------------------------------------------------------
+    ### adm1 --------------------------------------------------------------------
 
-  if (is.name(substitute(adm1))) {
-    col_name <- deparse(substitute(adm1))
-    if (!col_name %in% names(data)) {
-      cli::cli_abort(colNotFound(col_name, data_name))
-    } else {
-      if (!is.character(data[[col_name]])) {
+    if (is.name(substitute(adm1))) {
+      col_name <- deparse(substitute(adm1))
+      if (!col_name %in% names(data)) {
+        cli::cli_abort(colNotFound(col_name, data_name))
+      } else {
+        if (!is.character(data[[col_name]])) {
+          cli::cli_abort(wrongType("adm1"))
+        } else {adm1_df <- dplyr::mutate(data, adm1 = {{adm1}}, .keep = "none")}
+      }
+    }
+    else if (!is.name(substitute(adm1)) && !is.null(substitute(adm1))) {
+      if (!rlang::is_string(adm1)) {
         cli::cli_abort(wrongType("adm1"))
-      } else {adm1_df <- dplyr::mutate(data, adm1 = {{adm1}}, .keep = "none")}
+      } else {
+        adm1_df <- dplyr::tibble(adm1 = rep({{adm1}}, times = nrow(data)))
+      }
     }
-  }
-  else if (!is.name(substitute(adm1)) && !is.null(substitute(adm1))) {
-    if (!rlang::is_string(adm1)) {
-      cli::cli_abort(wrongType("adm1"))
-    } else {
-      adm1_df <- dplyr::tibble(adm1 = rep({{adm1}}, times = nrow(data)))
+    else if (is.null(substitute(adm1))) {
+      cli::cli_abort("`adm1` can't be NULL.")
     }
-  }
-  else if (is.null(substitute(adm1))) {
-    cli::cli_abort("`adm1` can't be NULL.")
-  }
 
-  ### adm2 --------------------------------------------------------------------
+    ### adm2 --------------------------------------------------------------------
 
-  if (is.name(substitute(adm2))) {
-    col_name <- deparse(substitute(adm2))
-    if (!col_name %in% names(data)) {
-      cli::cli_abort(colNotFound(col_name, data_name))
-    } else {
-      if (!is.character(data[[col_name]])) {
+    if (is.name(substitute(adm2))) {
+      col_name <- deparse(substitute(adm2))
+      if (!col_name %in% names(data)) {
+        cli::cli_abort(colNotFound(col_name, data_name))
+      } else {
+        if (!is.character(data[[col_name]])) {
+          cli::cli_abort(wrongType("adm2"))
+        } else {adm2_df <- dplyr::mutate(data, adm2 = {{adm2}}, .keep = "none")}
+      }
+    }
+    else if (!is.name(substitute(adm2)) && !is.null(substitute(adm2))) {
+      if (!rlang::is_string(adm2)) {
         cli::cli_abort(wrongType("adm2"))
-      } else {adm2_df <- dplyr::mutate(data, adm2 = {{adm2}}, .keep = "none")}
+      } else {
+        adm2_df <- dplyr::tibble(adm2 = rep({{adm2}}, times = nrow(data)))
+      }
     }
-  }
-  else if (!is.name(substitute(adm2)) && !is.null(substitute(adm2))) {
-    if (!rlang::is_string(adm2)) {
-      cli::cli_abort(wrongType("adm2"))
-    } else {
-      adm2_df <- dplyr::tibble(adm2 = rep({{adm2}}, times = nrow(data)))
+    else if (is.null(substitute(adm2))) {
+      adm2_df <- dplyr::tibble(adm2 = NA_character_)
     }
-  }
-  else if (is.null(substitute(adm2))) {
-    adm2_df <- dplyr::tibble(adm2 = NA_character_)
-  }
 
 
   adm_df <- dplyr::bind_cols(adm1_df, adm2_df)
@@ -577,7 +577,7 @@ msg_adm <- function(data, indx_adm1_notPreset, indx_adm1_mising,
     }
   }
 
-  # Print msg ---------------------------------------------------------------
+  ## Merge both msgs ---------------------------------------------------------
 
   msg_final <- cli::cli_fmt({
     if (length(indx_adm1_notPreset) == 0) {

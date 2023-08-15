@@ -9,7 +9,7 @@
 A list. Each element of the list returns a unique ID.
 }
 \source{
-Based on the CGAZ dataset from geoBoundaries: \url{https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/CGAZ}
+Based on the CGAZ dataset from \href{https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/CGAZ}{geoBoundaries}.
 }
 \usage{
 regions

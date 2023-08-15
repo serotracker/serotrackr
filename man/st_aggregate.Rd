@@ -2,7 +2,7 @@
 % Please edit documentation in R/st_aggregate.R
 \name{st_aggregate}
 \alias{st_aggregate}
-\title{Aggregate data}
+\title{Aggregate validated data}
 \usage{
 st_aggregate(
   data,

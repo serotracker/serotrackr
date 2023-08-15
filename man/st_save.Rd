@@ -2,7 +2,7 @@
 % Please edit documentation in R/st_save.R
 \name{st_save}
 \alias{st_save}
-\title{Save to xlsx format}
+\title{Export data to Excel}
 \usage{
 st_save(data, estimates, path)
 }

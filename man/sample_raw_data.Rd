@@ -3,7 +3,7 @@
 \docType{data}
 \name{sample_raw_data}
 \alias{sample_raw_data}
-\title{Sample raw data}
+\title{Example fictitious data}
 \format{
 \code{sample_raw_data}
 A data frame with 100 rows and 14 columns:
