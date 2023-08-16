@@ -72,7 +72,8 @@ Locates the required and optional columns in your data and validates them.</p>
 <span>  age_group <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  age <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sex <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  include_others <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  include_others <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rmd_safe <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -142,6 +143,15 @@ values are: <code>f</code>, <code>m</code>, <code>o</code>, <code>female</code>,
 <dt>include_others</dt>
 <dd><p>include additional columns or not</p></dd>
 
+
+<dt>rmd_safe</dt>
+<dd><p>Logical. If TRUE, the output message will be appropriate for
+R markdown, i.e. progress indicators are removed and all the messages are
+printed at the same time, making only one chunk in the R markdown's knitted
+output. If FALSE (default), the progress indicators and messages are
+printed for each argument one by one, making it appropriate for interactive
+use.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -152,49 +162,38 @@ values are: <code>f</code>, <code>m</code>, <code>o</code>, <code>female</code>,
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">st_validate</span><span class="op">(</span><span class="va">sample_raw_data</span>,</span></span>
-<span class="r-in"><span>            dataset_id <span class="op">=</span> <span class="va">dataset_id</span>,</span></span>
-<span class="r-in"><span>            id <span class="op">=</span> <span class="va">id</span>,</span></span>
-<span class="r-in"><span>            age_group <span class="op">=</span> <span class="st">"12-17"</span>,</span></span>
-<span class="r-in"><span>            sex <span class="op">=</span> <span class="st">"m"</span>,</span></span>
-<span class="r-in"><span>            adm0 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm0</span><span class="op">$</span><span class="va">Canada</span>,</span></span>
-<span class="r-in"><span>            adm1 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm1</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span>,</span></span>
-<span class="r-in"><span>            adm2 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm2</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span><span class="op">$</span><span class="va">Calgary</span>,</span></span>
-<span class="r-in"><span>            collection_start_date <span class="op">=</span> <span class="st">"2023-01-01"</span>,</span></span>
-<span class="r-in"><span>            collection_end_date <span class="op">=</span> <span class="st">"2023-02-01"</span>,</span></span>
-<span class="r-in"><span>            test_id <span class="op">=</span> <span class="va">assays</span><span class="op">$</span><span class="va">`SARS-CoV-2`</span><span class="op">$</span><span class="va">`AAZ LMB - IgG, IgM - COVID-PRESTO®`</span>,</span></span>
-<span class="r-in"><span>            result <span class="op">=</span> <span class="va">result</span>,</span></span>
-<span class="r-in"><span>            result_cat <span class="op">=</span> <span class="st">"negative"</span>,</span></span>
-<span class="r-in"><span>            include_others <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Mapping columns and validating data</span> <span style="color: #00BBBB;">─────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> age_group ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">age_group</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [29ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> sex ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">sex</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [13ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm0 ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">adm0</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [11ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm1 ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">adm1</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [11ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> adm2 ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">adm2</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [15ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> collection_start_date ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">collection_start_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [14ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> collection_end_date ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">collection_end_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [48ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> test_id ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">test_id</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [8ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> result ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">result</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [12ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> result_cat ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">result_cat</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [9ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> dataset_id ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">dataset_id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [4ms]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">ℹ</span> id ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [14ms]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB; font-weight: bold;">Validation finished</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">st_validate</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">sample_raw_data</span>,</span></span>
+<span class="r-in"><span>  dataset_id <span class="op">=</span> <span class="va">dataset_id</span>,</span></span>
+<span class="r-in"><span>  id <span class="op">=</span> <span class="va">id</span>,</span></span>
+<span class="r-in"><span>  age_group <span class="op">=</span> <span class="st">"12-17"</span>,</span></span>
+<span class="r-in"><span>  sex <span class="op">=</span> <span class="st">"m"</span>,</span></span>
+<span class="r-in"><span>  adm0 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm0</span><span class="op">$</span><span class="va">Canada</span>,</span></span>
+<span class="r-in"><span>  adm1 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm1</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span>,</span></span>
+<span class="r-in"><span>  adm2 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm2</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span><span class="op">$</span><span class="va">Calgary</span>,</span></span>
+<span class="r-in"><span>  collection_start_date <span class="op">=</span> <span class="st">"2023-01-01"</span>,</span></span>
+<span class="r-in"><span>  collection_end_date <span class="op">=</span> <span class="st">"2023-02-01"</span>,</span></span>
+<span class="r-in"><span>  test_id <span class="op">=</span> <span class="va">assays</span><span class="op">$</span><span class="va">`SARS-CoV-2`</span><span class="op">$</span><span class="va">`AAZ LMB - IgG, IgM - COVID-PRESTO®`</span>,</span></span>
+<span class="r-in"><span>  result <span class="op">=</span> <span class="va">result</span>,</span></span>
+<span class="r-in"><span>  result_cat <span class="op">=</span> <span class="st">"negative"</span>,</span></span>
+<span class="r-in"><span>  include_others <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  rmd_safe <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #00BBBB;">Mapping columns and validating data</span> ─────────────────────────────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">age_group</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [45ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">sex</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [11ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">adm0</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [9ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">adm1</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [9ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">adm2</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [12ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">collection_start_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [11ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">collection_end_date</span> <span style="color: #555555;">is a valid scalar.</span><span style="color: #00BBBB;"> [38ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">test_id</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [7ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">result</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [11ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">result_cat</span> <span style="color: #555555;">is a valid string.</span><span style="color: #00BBBB;"> [8ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">dataset_id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [3ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">id</span> <span style="color: #555555;">is a valid column.</span><span style="color: #00BBBB;"> [11ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #00BBBB;">Validation finished</span> ─────────────────────────────────────────────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Success!</span> Validated data created.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 100 × 12</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    dataset_id    id age_group sex   adm1             adm2  collection_start_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>               </span>
