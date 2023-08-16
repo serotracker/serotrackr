@@ -8,9 +8,12 @@
 # Prerequisites -----------------------------------------------------------
 
 devtools::load_all()
+# Note: dataset from `Less random` section is exported as a package object.
 
 
-# Generate random age groups ----------------------------------------------
+# More random -------------------------------------------------------------
+
+## Generate random age groups ----------------------------------------------
 
 generate_age <- function(n, age_grouping = 10) {
   lower <- sample(seq(0, 120, by = age_grouping), n, replace = TRUE)
@@ -33,7 +36,7 @@ generate_age <- function(n, age_grouping = 10) {
 }
 
 
-# Generate random dates ---------------------------------------------------
+## Generate random dates ---------------------------------------------------
 
 generate_date <- function(n, year_start = 1990, year_end = 2030,
                           month_max = 14, day_max = 34,
@@ -58,7 +61,7 @@ generate_date <- function(n, year_start = 1990, year_end = 2030,
 }
 
 
-# Generate sample raw data ------------------------------------------------
+## Generate sample raw data ------------------------------------------------
 
 makedf <- function(n, adm0 = "Canada", adm1 = "Alberta",
                    pathogen = "SARS-CoV-2", age_grouping = 10,
@@ -163,10 +166,75 @@ makedf <- function(n, adm0 = "Canada", adm1 = "Alberta",
 }
 
 
-# Use data ----------------------------------------------------------------
+## Run random data ---------------------------------------------------------
 
 set.seed(98765)
 sample_raw_data <- makedf(n = 100)
 
-usethis::use_data(sample_raw_data, overwrite = TRUE)
 
+
+# Less random -------------------------------------------------------------
+
+# This section makes a less random sample data as an alternative to the one
+# created in the `More random` section. This version is preferred as it makes
+# package examples simpler.
+
+makedf_simple <- function(n) {
+  set.seed(98765)
+
+  # age_group & age
+  age_group <- sample(c("0-17", "18-64", "65+"), n, replace = TRUE)
+  lower_age <- as.numeric(stringr::str_extract(age_group, "^.*(?=((\\-|\\+)))"))
+  age <- numeric(0)
+  for (i in 1:length(lower_age)) {
+    age[i] <- dplyr::case_when(
+      lower_age[i] == 0  ~ lower_age[i]+sample(0:17, 1),
+      lower_age[i] == 18  ~ lower_age[i]+sample(0:46, 1),
+      lower_age[i] == 65 ~ sample(c(lower_age[i]+sample(0:35, 1), 999), 1,
+                                  prob = c(0.95, 0.05))
+    )
+  }
+  age_group[4] <- NA_character_
+  age[4] <- -999
+
+  # state & city
+  state <- sample(c("Alberta", "ontario"), n, replace = TRUE)
+  city <- character(0)
+  for (i in 1:length(state)) {
+    city[i] <- dplyr::case_when(
+      state[i] == "Alberta" ~ sample(c("Calgary", "Calagry", "Edmonton"), 1),
+      state[i] == "ontario" ~ sample(c("Toronoto", "toronto", "London"), 1)
+    )
+  }
+
+  # result
+  result <- sample(seq(0, 400, by = 0.01), n, replace = TRUE)
+
+  dplyr::tibble(
+    dataset_id = rep(1:2, each = n/2),
+    id = 1:n,
+    age_group = age_group,
+    age = age,
+    sex = sample(c("f", "m"), n, replace = TRUE),
+    country = "Canada",
+    state = state,
+    city = city,
+    start_date = rep(c("2023/Jan/01", "01-03-2020"), each = n/2),
+    end_date = rep(c("15-8-2023", "2021-dec-31"), each = n/2),
+    test_id = rep(c(assays$`SARS-CoV-2`$`ID.Vet - IgG - ID Screen`,
+                    assays$`SARS-CoV-2`$`AESKU - IgG - SARS-CoV-2 NP IgG`),
+                  each = n/2),
+    result = result,
+    result_cat = ifelse(result > 50,
+                        "positive",
+                        ifelse(result < 30, "negative", "borderline"))
+  )
+}
+
+sample_raw_data <- makedf_simple(n = 100)
+
+
+
+# Use data ----------------------------------------------------------------
+
+usethis::use_data(sample_raw_data, overwrite = TRUE)
