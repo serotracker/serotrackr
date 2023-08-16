@@ -19,7 +19,8 @@ st_validate(
   age_group = NULL,
   age = NULL,
   sex = NULL,
-  include_others = TRUE
+  include_others = TRUE,
+  rmd_safe = FALSE
 )
 }
 \arguments{
@@ -63,6 +64,13 @@ values are between 0 and 120 inclusive.}
 values are: \code{f}, \code{m}, \code{o}, \code{female}, \code{male}, or \code{other} ignoring case.}
 
 \item{include_others}{include additional columns or not}
+
+\item{rmd_safe}{Logical. If TRUE, the output message will be appropriate for
+R markdown, i.e. progress indicators are removed and all the messages are
+printed at the same time, making only one chunk in the R markdown's knitted
+output. If FALSE (default), the progress indicators and messages are
+printed for each argument one by one, making it appropriate for interactive
+use.}
 }
 \value{
 A validated data.frame
@@ -72,18 +80,21 @@ A validated data.frame
 Locates the required and optional columns in your data and validates them.
 }
 \examples{
-st_validate(sample_raw_data,
-            dataset_id = dataset_id,
-            id = id,
-            age_group = "12-17",
-            sex = "m",
-            adm0 = regions$adm0$Canada,
-            adm1 = regions$adm1$Canada$Alberta,
-            adm2 = regions$adm2$Canada$Alberta$Calgary,
-            collection_start_date = "2023-01-01",
-            collection_end_date = "2023-02-01",
-            test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
-            result = result,
-            result_cat = "negative",
-            include_others = TRUE)
+st_validate(
+  sample_raw_data,
+  dataset_id = dataset_id,
+  id = id,
+  age_group = "12-17",
+  sex = "m",
+  adm0 = regions$adm0$Canada,
+  adm1 = regions$adm1$Canada$Alberta,
+  adm2 = regions$adm2$Canada$Alberta$Calgary,
+  collection_start_date = "2023-01-01",
+  collection_end_date = "2023-02-01",
+  test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
+  result = result,
+  result_cat = "negative",
+  include_others = TRUE,
+  rmd_safe = TRUE
+)
 }

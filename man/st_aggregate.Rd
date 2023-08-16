@@ -68,7 +68,8 @@ validated_df <- st_validate(
   test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
   result = result,
   result_cat = result_cat,
-  include_others = TRUE
+  include_others = TRUE,
+  rmd_safe = TRUE
 )
 
 st_aggregate(validated_df)

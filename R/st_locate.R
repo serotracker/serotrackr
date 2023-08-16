@@ -4,6 +4,10 @@
 # section (left_join).
 # FIXME The ... argument in st_locate() must run only if adm1 and/or adm2 are
 # column names. Temporary fix is applied. Improve this.
+# TODO `st_locate()`'s reporting message can be confusing when an adm1 region
+# has errors, its corresponding adm2 is okay, and there are other erroneous
+# adm2 values. In this case, user needs to run `st_locate()` twice, first to
+# address adm1, and then to address adm2.
 
 
 #' @title Convert region names to codes
@@ -348,12 +352,12 @@ add_joined_region_codes <- function(data, adm0_code) {
 
 
 
-#' @title Evaluate lhs and rhs
+#' @title Evaluate LHS and RHS
 #' @description
-#' This function first validates lhs and rhs values and outputs error messages
-#'  if they are invalid. If both lhs and rhs are valid, this function adds the
-#'  region codes defined in rhs to their corresponding region names, defined in
-#'  lhs, to the input data.
+#' This function first validates LHS and RHS values and outputs error messages
+#'  if they are invalid. If both LHS and RHS are valid, this function adds the
+#'  region codes defined in RHS to their corresponding region names, defined in
+#'  LHS, to the input data.
 #'
 #' @param data A dataframe containing at least four columns naming `adm1`,
 #'  `adm2`, `adm1_code`, and `adm2_code`. It is meant to be the output of
@@ -579,16 +583,17 @@ msg_adm <- function(data, indx_adm1_notPreset, indx_adm1_mising,
 
   ## Merge both msgs ---------------------------------------------------------
 
-  msg_final <- cli::cli_fmt({
+  msg_final <- c(
     if (length(indx_adm1_notPreset) == 0) {
       msg_result("adm1", msg_adm1, error = FALSE)
-    } else {msg_result("adm1", msg_adm1)}
+    } else {msg_result("adm1", msg_adm1)},
 
     if (sum(is.na(data$adm2)) != nrow(data)) {
       if (length(indx_adm1_mising) == 0 && length(indx_adm2_notPreset) == 0) {
         msg_result("adm2", msg_adm2, error = FALSE)
       } else {msg_result("adm2", msg_adm2)}
     }
-  })
+  )
   msg_final
 }
+

@@ -12,7 +12,7 @@ validated_df <- st_validate(sample_raw_data,
                             test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
                             result = result,
                             result_cat = "negative",
-                            include_others = TRUE)
+                            include_others = FALSE)
 
 
 test_that("mapping columns and validation works", {
@@ -20,6 +20,6 @@ test_that("mapping columns and validation works", {
     names(validated_df),
     c("dataset_id", "id", "age_group", "sex", "adm1", "adm2",
       "collection_start_date", "collection_end_date", "test_id",
-      "result", "result_cat", "another_col")
+      "result", "result_cat")
   )
 })

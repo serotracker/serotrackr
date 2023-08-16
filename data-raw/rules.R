@@ -192,10 +192,10 @@ validate::description(rules) <- c(
   paste("code was not found. Use `{.pkg serotrackr}::regions$adm0${.emph",
         "YourCountry}`."),
   # adm1_presetVal
-  paste("codes were not found. Use `{.pkg serotrackr}::",
-        "regions$adm1${.emph YourCountry}${.emph YourState}`."),
+  paste("codes were not found. Use `st_locate()` or `{.pkg",
+        "serotrackr}::regions$adm1${.emph YourCountry}${.emph YourState}`."),
   # adm2_presetVal
-  paste("codes were not found. Use",
+  paste("codes were not found. Use `st_locate()` or",
         "`{.pkg serotrackr}::regions$adm2${.emph YourCountry}${.emph",
         "YourState}${.emph YourDistrict}`."),
   # start_date_isValidFrmt
