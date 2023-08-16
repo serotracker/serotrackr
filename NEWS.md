@@ -1,6 +1,9 @@
 # serotrackr (development version)
 
-* Updated the theme of the pkgdown website.
+* Updated the [Get started] (https://serotracker.github.io/serotrackr/articles/serotrackr.html) vignette to include `st_locate()`.
+* Simplified `sample_raw_data` for more straightforward examples.
+* Added an `rmd_safe` argument to `st_validate()` to make its output suitable for R Markdown documents and pkgdown web pages.
+* Updated the theme of the pkgdown website for better syntax highlighting.
 * Organized the [Reference page](https://serotracker.github.io/serotrackr/reference/index.html) of the pkgdown website.
 
 # serotrackr 0.2.0

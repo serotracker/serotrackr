@@ -9,29 +9,35 @@ vignette: >
 
 ```{r set_options, include = FALSE}
 knitr::opts_chunk$set(
-  # collapse = TRUE
   comment = "#>"
 )
 ```
 
 
-*serotrackr* helps you prepare your raw data for submission to [SeroTracker](https://serotracker.com){target="_blank"}. We will use a sample raw dataset included in the package to demonstrate the workflow of serotrackr:
+*serotrackr* helps you prepare your raw data for submission to [SeroTracker](https://serotracker.com){target="_blank"}. I will use parts of a sample raw dataset included in *serotrackr* to demonstrate the workflow of the package:
 
 ```{r setup, message=FALSE}
 library(serotrackr)
-library(dplyr)
-
-head(sample_raw_data)
 ```
+
+```{r subset_sample_raw_data}
+mydata <- dplyr::select(
+  sample_raw_data,
+  dataset_id, id, age_group, age, sex, state, city, result, result_cat
+)
+
+head(mydata)
+```
+
 
 Here are the steps you should follow:
 
 ## 1) Validate your data
 
-The first step is to use `st_validate()`. Here, you need to specify which columns in your data contains the data that is required for submission. Instead of unquoted column names, you can also provide a vector of length one for most of the arguments, which would be applied to all records in your data after validation.
+The first step is to use `st_validate()`. It checks your individual-level raw data for common issues, prints a detailed explanation of any errors, and if all is good, outputs a cleaned and validated dataframe. Most of the arguments of this function accept both an unquoted column name or a length-one vector, the value of which will be applied to all records in your data after validation.
 
 
-```{r st_validate_error, eval=FALSE}
+```{r st_validate_error}
 validated_df <- st_validate(
   sample_raw_data,
   dataset_id = dataset_id,
@@ -40,89 +46,121 @@ validated_df <- st_validate(
   age = age,
   sex = sex,
   adm0 = regions$adm0$Canada,
-  adm1 = regions$adm1$Canada$Alberta,
-  adm2 = regions$adm2$Canada$Alberta$Calgary,
-  collection_start_date = "2023-01-01",
-  collection_end_date = "2023-02-01",
-  test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
+  adm1 = state,
+  adm2 = city,
+  collection_start_date = "2020-Mar-01",
+  collection_end_date = "15/8/2023",
+  test_id = assays$`SARS-CoV-2`$`ID.Vet - IgG - ID Screen`,
   result = result,
   result_cat = result_cat,
-  include_others = TRUE
+  include_others = TRUE,
+  rmd_safe = TRUE
 )
-```
-
-```{r, out.width = "700px", echo=FALSE}
-knitr::include_graphics("../man/figures/screenshot_1.png")
 ```
 
   
 <br>
-`st_validate()` produced a detailed report of any errors which need to be addressed before proceeding. To keep things concise, I replace `age_group`, `age`, and `sex` with some correct values and also correct the `result_cat`.
+As you can see above, `st_validate()` found 4 issues which must be addressed before proceeding.
 
-```{r address_issues}
-set.seed(4567)
-new_raw_data <- sample_raw_data %>%
-  dplyr::mutate(
-    age_group = rep(c("0-9", "10-19", "20-29", "30-39", "40+"), each=20),
-    age = c(sample(0:9, 20, replace=TRUE), sample(10:19, 20, replace=TRUE),
-            sample(20:29, 20, replace=TRUE), sample(30:39, 20, replace=TRUE),
-            sample(40:120, 20, replace=TRUE)),
-    sex = sample(c(rep("f", 40), rep("m", 40), rep("o", 20))),
-    result_cat = dplyr::case_when(result_cat == "neg" ~ "negative",
-                                  result_cat == "pos" ~ "positive",
-                                  TRUE ~ result_cat)
-  )
+## 2) Address issues
+
+### 2.1) General errors
+
+I start with correcting the `age` issues, both of which seem to result from indicating missing values with either `-999` or `999`. In general, any missingness must be represented by `NA` values before running `st_validate()`. Here is a quick fix:
+
+```{r address_age}
+mydata <- dplyr::mutate(
+  mydata,
+  age = ifelse(age %in% c(-999, 999), NA, age)
+)
 ```
 
-Now, let's rerun `st_validate()`:
+### 2.2) Errors in region data
 
-```{r st_validate_success, message=FALSE, results='hide'}
+The `adm1` (state/province) and `adm2` (district/municipality) errors happened because `st_validate()` expects standardized region codes, not region names, for these two arguments. These region codes are stored in the `serotrackr::regions` object, which is a named list.
+
+- If you conducted your study in only one region, simply use `regions` to get its region code.
+- If you conducted your study in multiple regions and have a column in your data for it, similar to our case here, then use `st_locate()`. It will automatically convert as much of your region names as possible to region codes. The rest must be defined by you, as below.
+
+First, run `st_locate()` with its first four arguments to see what is wrong with your region data:
+
+```{r st_locate_error}
+st_locate(data = mydata,
+          adm0 = regions$adm0$Canada,
+          adm1 = state,
+          adm2 = city)
+```
+
+Ah, typos! Next, use the ... argument to define the unmatched ones:
+
+```{r st_locate_success}
+mydata <- st_locate(
+  data = mydata,
+  adm0 = regions$adm0$Canada,
+  adm1 = state,
+  adm2 = city,
+  "Toronoto" = regions$adm2$Canada$Ontario$Toronto,
+  "Calagry"  = regions$adm2$Canada$Alberta$Calgary
+)
+```
+`st_locate()` added two new columns to the data, named `adm1` and `adm2`, containing standardized region codes. Now that all issues are resolved, let's rerun `st_validate()`:
+
+```{r st_validate_success}
 validated_df <- st_validate(
-  new_raw_data,
+  mydata,
   dataset_id = dataset_id,
   id = id,
   age_group = age_group,
   age = age,
   sex = sex,
   adm0 = regions$adm0$Canada,
-  adm1 = regions$adm1$Canada$Alberta,
-  adm2 = regions$adm2$Canada$Alberta$Calgary,
-  collection_start_date = "2023-01-01",
-  collection_end_date = "2023-02-01",
-  test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
+  adm1 = adm1,
+  adm2 = adm2,
+  collection_start_date = "2020-Mar-01",
+  collection_end_date = "15/8/2023",
+  test_id = assays$`SARS-CoV-2`$`ID.Vet - IgG - ID Screen`,
   result = result,
   result_cat = result_cat,
-  include_others = TRUE
+  include_others = TRUE,
+  rmd_safe = TRUE
 )
 ```
 
-```{r, out.width = "700px", echo=FALSE}
-knitr::include_graphics("../man/figures/screenshot_2.png")
-```
   
 <br>
-Hooray! Here is a glimps at the validated data:
+Perfect! Here is a glimpse at the validated data:
 
-```{r print_output}
+```{r print_validated_df}
 head(validated_df)
 ```
 
 
-## 2) Generate aggregate estimates
+## 3) Generate aggregate estimates
 
-Use `st_aggregate()` to generate aggregated estimates:
+Now, use `st_aggregate()` to generate aggregated estimates from the validated data:
 
-```{r}
+```{r st_aggregate_success}
 estimates <- st_aggregate(validated_df)
+```
+
+And here are the generated estimates:
+
+```{r print_estimates}
 head(estimates)
 ```
 
 
-## 3) Export to Excel for submission
-The `st_save()` function exports validated data and generated estimates to an Excel document.
+## 4) Export to Excel for submission
 
-```{r, eval=FALSE}
+Finally, use `st_save()` to export both validated data and generated estimates to an Excel document:
+
+```{r st_save, eval=FALSE}
 st_save(validated_df, estimates, path = "submission.xlsx")
 ```
 
-Some fields, mostly metadata, in the exported document will still need to be filled in. The first sheet of the document has the necessary instructions. When you are done, the document is ready to be submitted on [SeroTracker.com](https://serotracker.com){target="_blank"}.
+The saved Excel document has six sheets, including `Instructions`, `Study Metadata`, `Age Groups`, `Immunoassays`, `Estimates`, and `Data`.
+
+- The output of `st_validate()` fills in the *Age Groups* and *Data* sheets completely. It also fills in parts of the *Study Metadata* and *Immunoassays* sheets, as much as possible.
+- The output of `st_aggregate()` fills in the *Estimates* sheet.
+
+Open the Excel document and specifically look for empty mandatory columns, indicated with colour, in *Study Metadata* and *Immunoassays* sheets, and fill them in. When you are done, the document is ready to be submitted on [SeroTracker.com](https://serotracker.com){target="_blank"}.
