@@ -26,7 +26,7 @@ mydata <- dplyr::select(
   dataset_id, id, age_group, age, sex, state, city, result, result_cat
 )
 
-head(mydata)
+mydata
 ```
 
 
@@ -131,7 +131,7 @@ validated_df <- st_validate(
 Perfect! Here is a glimpse at the validated data:
 
 ```{r print_validated_df}
-head(validated_df)
+validated_df
 ```
 
 
@@ -146,7 +146,7 @@ estimates <- st_aggregate(validated_df)
 And here are the generated estimates:
 
 ```{r print_estimates}
-head(estimates)
+estimates
 ```
 
 
