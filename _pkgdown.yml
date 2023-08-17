@@ -6,7 +6,7 @@ template:
     primary: "#16809c"
 
 development:
-  mode: auto
+  mode: unreleased
 
 reference:
 - title: Main verbs

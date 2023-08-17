@@ -14,7 +14,5 @@ load_all()
 # TODO Add another function to evaluate assays, including their test_cutoff
 # TODO Should ab_titer_unit remain an optional field?
 
-# TODO Add R CMD Check and other banners to README
-# TODO Add experimental, ... tags to pkgdown website
 # TODO Update region's data with Jane's work
 

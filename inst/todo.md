@@ -2,6 +2,7 @@
 
 ## General
 - Add another function to evaluate assays, including their cutoff values.
+- `regions` and `regions_df` need more cleaning. Some adm1 values are missing. Some adm1 and adm2 values have garbled text.
 
 ## st_validate()
 
