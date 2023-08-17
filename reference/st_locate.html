@@ -155,10 +155,14 @@ two new columns for adm1 and/or adm2 arguments of <code><a href="st_validate.htm
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">st_locate</span><span class="op">(</span><span class="va">sample_raw_data</span>,</span></span>
-<span class="r-in"><span>          adm0 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm0</span><span class="op">$</span><span class="va">Canada</span>,</span></span>
-<span class="r-in"><span>          adm1 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm1</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span>,</span></span>
-<span class="r-in"><span>          adm2 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm2</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span><span class="op">$</span><span class="va">Calgary</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">st_locate</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">sample_raw_data</span>,</span></span>
+<span class="r-in"><span>  adm0 <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm0</span><span class="op">$</span><span class="va">Canada</span>,</span></span>
+<span class="r-in"><span>  adm1 <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>  adm2 <span class="op">=</span> <span class="va">city</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"Toronoto"</span> <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm2</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Ontario</span><span class="op">$</span><span class="va">Toronto</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"Calagry"</span>  <span class="op">=</span> <span class="va">regions</span><span class="op">$</span><span class="va">adm2</span><span class="op">$</span><span class="va">Canada</span><span class="op">$</span><span class="va">Alberta</span><span class="op">$</span><span class="va">Calgary</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">adm1</span> <span style="color: #555555;">region names/codes were successfully matched. `adm1` column was added.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #FFFFFF; background-color: #00BB00;">adm2</span> <span style="color: #555555;">region names/codes were successfully matched. `adm2` column was added.</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 100 × 15</span></span>
@@ -177,6 +181,7 @@ two new columns for adm1 and/or adm2 arguments of <code><a href="st_validate.htm
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 90 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: end_date &lt;chr&gt;, test_id &lt;chr&gt;, result &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   result_cat &lt;chr&gt;, adm1 &lt;chr&gt;, adm2 &lt;chr&gt;</span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
