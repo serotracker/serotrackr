@@ -341,55 +341,138 @@ regions_df <- merged_final %>%
 
 
 
+# Testing if manually cleaned data can be merged in -----------------------
+
+# regions_df_adm0_adm1 <- regions_df %>%
+#   filter(shapeType != "ADM2")
+#
+# regions_df_adm2_jane <- openxlsx::read.xlsx("adm_18.xlsx") %>%
+#   select(NAME_1 = adm_level_1, shapeID_v5) %>%
+#   tibble()
+#
+# regions_df_adm2_merged <- left_join(
+#   regions_df %>% filter(shapeType=="ADM2") %>% select(-NAME_1),
+#   regions_df_adm2_jane,
+#   by = "shapeID_v5"
+# ) %>%
+#   relocate(NAME_1, .after = NAME_0)
+#
+#
+# regions_df_merged <- rbind(regions_df_adm0_adm1, regions_df_adm2_merged)
+#
+# setdiff(
+#   filter(regions_df_merged, shapeType=="ADM2") %>% distinct(NAME_1) %>% pull(),
+#   filter(regions_df_merged, shapeType=="ADM1") %>% distinct(NAME_1) %>% pull()
+# )
+
+
+# Unfortunately, there are 875 unique NAME_1 values at ADM2 level that are not
+# present at the ADM1 level. NAME_1 must be consistent across ADM1 and ADM2
+# levels to be able to establish hierarchy. Therefore, the manually-cleaned
+# data cannot be merged until this problem is addressed.
+
+
+
+# Clean NAME_2 Canada -----------------------------------------------------
+
+# NAME_2 needs more cleaning. Here, I only cleaned Canada.
+# I overwrite `regions_df` here, as now it should include cleaned adm2 data
+# for Canada:
+
+regions_df <- regions_df %>%
+  mutate(
+    NAME_2 = case_when(
+      NAME_0 == "Canada" & NAME_2 == "Athabasca--Grande Prairie--Pe*" ~
+        "Athabasca--Grande Prairie--Peace River",
+      NAME_0 == "Canada" & NAME_2 == "Banff--Jasper--Rocky Mountain*" ~
+        "Banff--Jasper--Rocky Mountain House",
+      NAME_0 == "Canada" & NAME_2 == "Lower Mainland--Southwest / L*" ~
+        "Lower Mainland--Southwest",
+      NAME_0 == "Canada" & NAME_2 == "North Coast / CÃ´te-nord" ~
+        "North Coast / Côte-Nord",
+      NAME_0 == "Canada" & NAME_2 == "Vancouver Island and Coast / *" ~
+        "Vancouver Island and Coast",
+      NAME_0 == "Canada" & NAME_2 == "West Coast--Northern Peninsul*" ~
+        "West Coast--Northern Peninsul--Labrador",
+      NAME_0 == "Canada" & NAME_2 == "Northwest Territories / Terri*" ~
+        "Northwest Territories",
+      NAME_0 == "Canada" & NAME_2 == "North Shore / CÃ´te-nord" ~
+        "North Shore / Côte-Nord",
+      NAME_0 == "Canada" & NAME_2 == "Prince Edward Island / Ãle-du" ~
+        "Prince Edward Island",
+      NAME_0 == "Canada" & NAME_2 == "Abitibi-TÃ©miscamingue" ~
+        "Abitibi-Témiscamingue",
+      NAME_0 == "Canada" & NAME_2 == "Centre-du-QuÃ©bec" ~
+        "Centre-du-Québec",
+      NAME_0 == "Canada" & NAME_2 == "ChaudiÃ¨re-Appalaches" ~
+        "Chaudière-Appalaches",
+      NAME_0 == "Canada" & NAME_2 == "CÃ´te-Nord" ~
+        "Côte-Nord",
+      NAME_0 == "Canada" & NAME_2 == "GaspÃ©sie--Ãles-de-la-Madelei" ~
+        "Gaspésie--Les Îles-de-la-Madeleine",
+      NAME_0 == "Canada" & NAME_2 == "LanaudiÃ¨re" ~
+        "Lanaudière",
+      NAME_0 == "Canada" & NAME_2 == "MontrÃ©al" ~
+        "Montreal",
+      NAME_0 == "Canada" & NAME_2 == "MontÃ©rÃ©gie" ~
+        "Montérégie",
+      NAME_0 == "Canada" & NAME_2 == "Nord-du-QuÃ©bec" ~
+        "Nord-du-Québec",
+      TRUE ~ NAME_2
+    )
+  )
+
+
+
 # Regions nested named list -----------------------------------------------
 
-regions_adm0 <- merged_final %>%
+regions_adm0 <- regions_df %>%
   filter(shapeType == "ADM0") %>%
   arrange(NAME_0) %>%
   select(NAME_0, shapeID_v5) %>%
-  pivot_wider(names_from = NAME_0, values_from = shapeID_v5) %>%
+  tidyr::pivot_wider(names_from = NAME_0, values_from = shapeID_v5) %>%
   as.list()
 
 
 
 regions_adm1 <- list()
-for (i in 1:length(unique(merged_final$NAME_0))) {
-  adm1_list <- merged_final %>%
+for (i in 1:length(unique(regions_df$NAME_0))) {
+  adm1_list <- regions_df %>%
     filter(shapeType == "ADM1") %>%
     arrange(NAME_0, NAME_1) %>%
-    filter(NAME_0 == sort(unique(merged_final$NAME_0))[i]) %>%
+    filter(NAME_0 == sort(unique(regions_df$NAME_0))[i]) %>%
     select(NAME_1, shapeID_v5) %>%
-    pivot_wider(names_from = NAME_1, values_from = shapeID_v5) %>%
+    tidyr::pivot_wider(names_from = NAME_1, values_from = shapeID_v5) %>%
     as.list()
-  regions_adm1[[sort(unique(merged_final$NAME_0))[i]]] <-
-    c(regions_adm1[[sort(unique(merged_final$NAME_0))[i]]], adm1_list)
+  regions_adm1[[sort(unique(regions_df$NAME_0))[i]]] <-
+    c(regions_adm1[[sort(unique(regions_df$NAME_0))[i]]], adm1_list)
 }
 
 
 
 regions_adm2 <- list()
-merged_final_noNA <- merged_final %>%
+regions_df_noNA <- regions_df %>%
   filter(shapeType == "ADM2") %>%
-  drop_na(NAME_1)
-for (i in 1:length(unique(merged_final_noNA$NAME_0))) {
-  per_adm0 <- merged_final_noNA %>%
+  tidyr::drop_na(NAME_1)
+for (i in 1:length(unique(regions_df_noNA$NAME_0))) {
+  per_adm0 <- regions_df_noNA %>%
     # filter(shapeType == "ADM2") %>%
     arrange(NAME_0, NAME_1, NAME_2) %>%
-    filter(NAME_0 == sort(unique(merged_final_noNA$NAME_0))[i])
+    filter(NAME_0 == sort(unique(regions_df_noNA$NAME_0))[i])
 
   adm1_adm2_list <- list()
   for (j in 1:length(unique(per_adm0$NAME_1))) {
     adm2_list <- per_adm0 %>%
       filter(NAME_1 == unique(per_adm0$NAME_1)[j]) %>%
       select(NAME_2, shapeID_v5) %>%
-      pivot_wider(names_from = NAME_2, values_from = shapeID_v5) %>%
+      tidyr::pivot_wider(names_from = NAME_2, values_from = shapeID_v5) %>%
       as.list()
     adm1_adm2_list[[unique(per_adm0$NAME_1)[j]]] <-
       c(adm1_adm2_list[[unique(per_adm0$NAME_1)[j]]], adm2_list)
   }
 
-  regions_adm2[[sort(unique(merged_final_noNA$NAME_0))[i]]] <-
-    c(regions_adm2[[sort(unique(merged_final_noNA$NAME_0))[i]]], adm1_adm2_list)
+  regions_adm2[[sort(unique(regions_df_noNA$NAME_0))[i]]] <-
+    c(regions_adm2[[sort(unique(regions_df_noNA$NAME_0))[i]]], adm1_adm2_list)
 }
 
 

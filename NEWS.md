@@ -1,5 +1,7 @@
 # serotrackr (development version)
 
+* Fixed `adm2` region names for Canada in `regions` and `regions_df` objects.
+* Put package in unreleased mode
 * Set up continuous integration using GitHub Actions to run R CMD check automatically after each push.
 * Organized all TODOs in a single [doc](https://github.com/serotracker/serotrackr/tree/main/inst/todo.md).
 * Updated the [Get started](https://serotracker.github.io/serotrackr/articles/serotrackr.html) vignette to include `st_locate()`.
