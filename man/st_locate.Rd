@@ -66,8 +66,13 @@ your region names that could not be matched. You can then use
 names.
 }
 \examples{
-st_locate(sample_raw_data,
-          adm0 = regions$adm0$Canada,
-          adm1 = regions$adm1$Canada$Alberta,
-          adm2 = regions$adm2$Canada$Alberta$Calgary)
+st_locate(
+  data = sample_raw_data,
+  adm0 = regions$adm0$Canada,
+  adm1 = state,
+  adm2 = city,
+  "Toronoto" = regions$adm2$Canada$Ontario$Toronto,
+  "Calagry"  = regions$adm2$Canada$Alberta$Calgary
+)
+
 }

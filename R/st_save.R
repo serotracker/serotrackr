@@ -1,15 +1,15 @@
 
 # TODO add colnames for `other columns` in Data sheet.
-# TODO check for validation rules.
-# TODO add adm0 unique code somewhere (not just country name).
 # TODO check data and estimates have the same object ID.
-# TODO study sheet n_participants should be length of unique ID s.
+# TODO check for validation rules.
+# TODO study sheet's `number_people` should be length of unique IDs, not nrow().
 
 #' @title Export data to Excel
 #' @description
 #' `r lifecycle::badge("experimental")`
 #' Organizes individual level data and aggregate estimates into a single xlsx
-#'  file to be uploaded on the \href{https://serotracker.com}{SeroTracker} website.
+#'  file to be uploaded on the \href{https://serotracker.com}{SeroTracker}
+#'  website.
 #' @param data A validated data.frame, output of `st_validate()`
 #' @param estimates a data.frame, output of `st_aggregate()`
 #' @param path where to save the xlsx file
@@ -18,21 +18,13 @@
 #' @export
 #'
 #' @examples
-#' new_raw_data <- dplyr::mutate(
+#' mydata <- dplyr::mutate(
 #'   sample_raw_data,
-#'   age_group = rep(c("0-9", "10-19", "20-29", "30-39", "40+"), each=20),
-#'   age = c(sample(0:9, 20, replace=TRUE), sample(10:19, 20, replace=TRUE),
-#'           sample(20:29, 20, replace=TRUE), sample(30:39, 20, replace=TRUE),
-#'           sample(40:120, 20, replace=TRUE)),
-#'   sex = sample(c(rep("f", 40), rep("m", 40), rep("o", 20))),
-#'   result_cat = dplyr::case_when(result_cat == "neg" ~ "negative",
-#'                                 result_cat == "pos" ~ "positive",
-#'                                 TRUE ~ result_cat)
+#'   age = ifelse(age %in% c(-999, 999), NA, age)
 #' )
 #'
-#'
 #' validated_df <- st_validate(
-#'   new_raw_data,
+#'   mydata,
 #'   dataset_id = dataset_id,
 #'   id = id,
 #'   age_group = age_group,
@@ -41,9 +33,9 @@
 #'   adm0 = regions$adm0$Canada,
 #'   adm1 = regions$adm1$Canada$Alberta,
 #'   adm2 = regions$adm2$Canada$Alberta$Calgary,
-#'   collection_start_date = "2023-01-01",
-#'   collection_end_date = "2023-02-01",
-#'   test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
+#'   collection_start_date = "2020-Mar-01",
+#'   collection_end_date = "15/8/2023",
+#'   test_id = assays$`SARS-CoV-2`$`ID.Vet - IgG - ID Screen`,
 #'   result = result,
 #'   result_cat = result_cat,
 #'   include_others = TRUE,
@@ -54,7 +46,6 @@
 #'
 #' st_save(validated_df, estimates, path = tempdir())
 #'
-
 st_save <- function(data, estimates, path) {
 
   path_template <- system.file("extdata", "Blank_Template_Scrubbed_v2.0.xlsx",

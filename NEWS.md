@@ -1,6 +1,8 @@
 # serotrackr (development version)
 
-* Updated the [Get started] (https://serotracker.github.io/serotrackr/articles/serotrackr.html) vignette to include `st_locate()`.
+* Set up continuous integration using GitHub Actions to run R CMD check automatically after each push.
+* Organized all TODOs in a single [doc](https://github.com/serotracker/serotrackr/tree/main/inst/todo.md).
+* Updated the [Get started](https://serotracker.github.io/serotrackr/articles/serotrackr.html) vignette to include `st_locate()`.
 * Simplified `sample_raw_data` for more straightforward examples.
 * Added an `rmd_safe` argument to `st_validate()` to make its output suitable for R Markdown documents and pkgdown web pages.
 * Updated the theme of the pkgdown website for better syntax highlighting.
@@ -19,11 +21,11 @@
 
 # serotrackr 0.1.0
 
-* Initial release
-* Added `map_cols()` function for mapping columns
-* Added `clean()` function for cleaning and validating data
-* Added `save_xlsx()` function for exporting data into the standard Excel template
-* Assays and regions are organized in two nested named lists, so users can take advantage of RStudio to search their assays and regions in a dropdown-like behaviour
-* Added documention to the current functions and data objects
-* Added sample data to showcase what raw data is expected and how the package handles it
-* Added package lifecycle information
+* Initial release.
+* Added `map_cols()` function for mapping columns.
+* Added `clean()` function for cleaning and validating data.
+* Added `save_xlsx()` function for exporting data into the standard Excel template.
+* Assays and regions are organized in two nested named lists, so users can take advantage of RStudio to search their assays and regions in a dropdown-like behaviour.
+* Added documention to the current functions and data objects.
+* Added sample data to showcase what raw data is expected and how the package handles it.
+* Added package lifecycle information.

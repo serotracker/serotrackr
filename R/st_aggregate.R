@@ -1,9 +1,7 @@
 
-# TODO Address R CMD check warnings and notes
-# TODO add functionality to `test_combination` and `ci_type` arguments
-# TODO fix case insensitivity for result_cat in st_validate()
+# TODO add functionality to the `test_combination` argument
+# TODO add warning for dropping NAs
 # TODO drop_na for `result` should be separated and done at a later stage
-# FIXME Should ab_titer_unit remain an optional field?
 # FIXME when there's only one age_group/sex, st_aggregate should not generate
 # age_group/sex subgroups.
 
@@ -30,20 +28,13 @@
 #' @export
 #'
 #' @examples
-#' new_raw_data <- dplyr::mutate(
+#' mydata <- dplyr::mutate(
 #'   sample_raw_data,
-#'   age_group = rep(c("0-9", "10-19", "20-29", "30-39", "40+"), each=20),
-#'   age = c(sample(0:9, 20, replace=TRUE), sample(10:19, 20, replace=TRUE),
-#'           sample(20:29, 20, replace=TRUE), sample(30:39, 20, replace=TRUE),
-#'           sample(40:120, 20, replace=TRUE)),
-#'   sex = c(rep("f", 40), rep("m", 40), rep("o", 20)),
-#'   result_cat = dplyr::case_when(result_cat == "neg" ~ "negative",
-#'                                 result_cat == "pos" ~ "positive",
-#'                                 TRUE ~ result_cat)
+#'   age = ifelse(age %in% c(-999, 999), NA, age)
 #' )
 #'
 #' validated_df <- st_validate(
-#'   new_raw_data,
+#'   mydata,
 #'   dataset_id = dataset_id,
 #'   id = id,
 #'   age_group = age_group,
@@ -52,9 +43,9 @@
 #'   adm0 = regions$adm0$Canada,
 #'   adm1 = regions$adm1$Canada$Alberta,
 #'   adm2 = regions$adm2$Canada$Alberta$Calgary,
-#'   collection_start_date = "2023-01-01",
-#'   collection_end_date = "2023-02-01",
-#'   test_id = assays$`SARS-CoV-2`$`AAZ LMB - IgG, IgM - COVID-PRESTO®`,
+#'   collection_start_date = "2020-Mar-01",
+#'   collection_end_date = "15/8/2023",
+#'   test_id = assays$`SARS-CoV-2`$`ID.Vet - IgG - ID Screen`,
 #'   result = result,
 #'   result_cat = result_cat,
 #'   include_others = TRUE,
@@ -62,8 +53,7 @@
 #' )
 #'
 #' st_aggregate(validated_df)
-
-
+#'
 st_aggregate <- function(
     data, subgroup = c("age_group", "sex", "age_group + sex"),
     borderline = c("negative", "positive", NA), add_ci = TRUE,
@@ -210,16 +200,6 @@ group_summarise <- function(data, group = NULL, add_ci, round_digits) {
       ),
       NA
     ),
-    # seroprev_95_ci_lower = round(
-    #   as.data.frame(Hmisc::binconf(numerator, denominator))$Lower,
-    #   round_digits
-    # ),
-    # seroprev_95_ci_upper = round(
-    #   as.data.frame(Hmisc::binconf(numerator, denominator))$Upper,
-    #   round_digits
-    # ),
-    # seroprev_95_ci_lower = NA,
-    # seroprev_95_ci_upper = NA,
     ab_denominator = sum(!is.na(result)),
     ab_titer_min = min(result),
     ab_titer_max = max(result),

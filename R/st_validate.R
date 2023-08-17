@@ -1,5 +1,6 @@
 
 # TODO add feature to generate age_group, if missing, based on age
+# TODO fix case insensitivity for result_cat in st_validate()
 
 #'
 #' @title Validate individual level data
@@ -61,6 +62,7 @@
 #'   include_others = TRUE,
 #'   rmd_safe = TRUE
 #' )
+#'
 st_validate <- function(data,
                         dataset_id,
                         id,
