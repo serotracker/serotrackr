@@ -6,7 +6,7 @@
 \alias{serotrackr-package}
 \title{serotrackr: Help with SeroTracker Submissions}
 \description{
-serotrackr is a package specifically developed to help users prepare their raw data for submission to the SeroTracker platform. This happens through several steps represented by one function each; 1) mapping the columns from raw data to those required for submission, 2) cleaning the raw data, 3) generating aggregate estimayes, 4) adjusting the estimates, 5) exporting the final data to a xlsx file where the remaining fields can be filled out by the user before submission on SeroTracker.com.
+serotrackr is an R package that helps users prepare their raw data for submission to the SeroTracker platform. It has functions to 1) validate the raw data, 2) locate region names and convert them to standard region codes, 3) aggregate data into estimates, and 4) save the results to an Excel document, which will then be submitted on SeroTracker.com.
 }
 \seealso{
 Useful links:

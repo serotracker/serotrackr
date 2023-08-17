@@ -13,7 +13,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 ## Goal
 
-*serotrackr* facilitates submissions on the SeroTracker 2.0 website.
+*serotrackr* is an R package that facilitates submissions to
+SeroTracker.
 
 ## Installation
 
